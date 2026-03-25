@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { initializeApp } from 'firebase/app';
-import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, Firestore, getFirestore, serverTimestamp } from 'firebase/firestore';
 
 type ServiceItem = {
   title: string;
@@ -88,6 +88,8 @@ export class App {
     this.leadSuccessMessage = '';
 
     try {
+      const db = await getLeadFirestore();
+
       await addDoc(collection(db, 'leads'), {
         fullName,
         email,
@@ -110,15 +112,33 @@ export class App {
   }
 }
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyCCsjDpH_BQz7QgbsMvZoCzbSHEb-n86wI',
-  authDomain: 'eps-yk-2026.firebaseapp.com',
-  projectId: 'eps-yk-2026',
-  storageBucket: 'eps-yk-2026.firebasestorage.app',
-  messagingSenderId: '519998080878',
-  appId: '1:519998080878:web:39443bc7b647167723e37f',
-  measurementId: 'G-ZPZ8RZ1TQG'
+type HostingFirebaseConfig = {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
+let dbInstance: Firestore | null = null;
+
+async function getLeadFirestore(): Promise<Firestore> {
+  if (dbInstance) {
+    return dbInstance;
+  }
+
+  const response = await fetch('/__/firebase/init.json', {
+    method: 'GET',
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    throw new Error('Unable to load Firebase config.');
+  }
+
+  const firebaseConfig = (await response.json()) as HostingFirebaseConfig;
+  const firebaseApp = initializeApp(firebaseConfig);
+  dbInstance = getFirestore(firebaseApp);
+  return dbInstance;
+}
