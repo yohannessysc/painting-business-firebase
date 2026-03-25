@@ -1,0 +1,111 @@
+<div class="page-bg" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="#home">Evolution Painting Solutions</a>
+  <nav class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main id="home" class="content-wrap">
+  <section class="hero panel">
+    <p class="eyebrow">Licensed and Insured | Residential and Commercial</p>
+    <h1>Fresh Color. Clean Craftsmanship. Reliable Service.</h1>
+    <p>
+      We are building <strong>{{ companyName }}</strong> to be your go-to local painting team.
+      This first launch includes placeholder projects while we complete real portfolio uploads.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#contact">Get A Free Quote</a>
+      <a class="btn btn-secondary" href="#gallery">View Inspiration</a>
+    </div>
+  </section>
+
+  <section class="stats panel">
+    <article>
+      <p class="value">24h</p>
+      <p class="label">Estimated response window</p>
+    </article>
+    <article>
+      <p class="value">100%</p>
+      <p class="label">Detail-oriented prep workflow</p>
+    </article>
+    <article>
+      <p class="value">Phase 4</p>
+      <p class="label">AI Chatbot lead assistant release</p>
+    </article>
+  </section>
+
+  <section id="services" class="panel">
+    <div class="section-header">
+      <p class="eyebrow">Services</p>
+      <h2>What We Offer</h2>
+    </div>
+    <div class="services-grid">
+      @for (service of services; track service.title) {
+        <article class="service-card">
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.description }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section id="gallery" class="panel">
+    <div class="section-header">
+      <p class="eyebrow">Project Inspiration</p>
+      <h2>Placeholder Visual Direction</h2>
+      <p>
+        These are temporary internet images while we prepare real before-and-after project photography.
+      </p>
+    </div>
+    <div class="gallery-grid">
+      @for (item of gallery; track item.title) {
+        <figure class="gallery-card">
+          <img [src]="item.imageUrl" [alt]="item.title" loading="lazy" />
+          <figcaption>
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.category }}</span>
+          </figcaption>
+        </figure>
+      }
+    </div>
+  </section>
+
+  <section class="panel placeholder-panel">
+    <div>
+      <p class="eyebrow">Testimonials</p>
+      <h2>Client Reviews Coming Soon</h2>
+      <p>
+        You can launch now with this placeholder block, then replace it once your first reviews are in.
+      </p>
+    </div>
+    <div class="badge">Placeholder Content Active</div>
+  </section>
+
+  <section id="contact" class="panel contact-panel">
+    <div>
+      <p class="eyebrow">Contact</p>
+      <h2>Start Your Quote</h2>
+      <p>Email: hello@evolutionpainting.com</p>
+      <p>Phone: (000) 000-0000</p>
+    </div>
+    <form class="quote-form" aria-label="Quote request form">
+      <label>
+        Full name
+        <input type="text" placeholder="Jane Doe" />
+      </label>
+      <label>
+        Email
+        <input type="email" placeholder="jane@email.com" />
+      </label>
+      <label>
+        Project details
+        <textarea rows="4" placeholder="Interior repaint, 3 bedrooms, 2 bathrooms"></textarea>
+      </label>
+      <button type="button" class="btn btn-primary">Submit Placeholder Form</button>
+    </form>
+  </section>
+</main>

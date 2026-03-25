@@ -1,0 +1,24 @@
+# Angular
+apps/web/.angular/
+apps/web/dist/
+apps/web/node_modules/
+
+# Firebase Functions
+functions/lib/
+functions/node_modules/
+
+# Env files
+**/.env
+**/.env.*
+apps/web/src/environments/environment*.local.ts
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
