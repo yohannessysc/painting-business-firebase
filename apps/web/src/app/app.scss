@@ -251,12 +251,35 @@ p {
 }
 
 .quote-form input,
-.quote-form textarea {
+.quote-form textarea,
+.quote-form select {
 	width: 100%;
 	border: 1px solid #d8d2c6;
 	border-radius: 0.65rem;
 	padding: 0.65rem 0.75rem;
 	font: inherit;
+}
+
+.quote-form select {
+	background: #fff;
+}
+
+.quote-form button[disabled] {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.form-feedback {
+	margin: 0;
+	font-size: 0.9rem;
+}
+
+.form-feedback--success {
+	color: var(--success);
+}
+
+.form-feedback--error {
+	color: #b83232;
 }
 
 @media (max-width: 880px) {

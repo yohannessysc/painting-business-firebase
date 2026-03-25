@@ -19,6 +19,10 @@ type GalleryItem = {
 })
 export class App {
   protected readonly companyName = 'Evolution Painting Solutions';
+  protected readonly leadApiBaseUrl = '/api';
+  protected isSubmittingLead = false;
+  protected leadSuccessMessage = '';
+  protected leadErrorMessage = '';
 
   protected readonly services: ServiceItem[] = [
     {
@@ -50,7 +54,7 @@ export class App {
       title: 'Premium Living Room Palette',
       category: 'Interior Inspiration',
       imageUrl:
-        'https://images.unsplash.com/photo-1616594039964-3c8b6f3e2590?auto=format&fit=crop&w=1200&q=80'
+        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80'
     },
     {
       title: 'Clean Kitchen Finishing',
@@ -59,4 +63,48 @@ export class App {
         'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1200&q=80'
     }
   ];
+
+  protected async submitLead(event: Event): Promise<void> {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    const fullName = String(formData.get('fullName') ?? '').trim();
+    const email = String(formData.get('email') ?? '').trim();
+    const phone = String(formData.get('phone') ?? '').trim();
+    const serviceType = String(formData.get('serviceType') ?? '').trim();
+    const message = String(formData.get('message') ?? '').trim();
+
+    if (!fullName || !email || !phone || !serviceType) {
+      this.leadErrorMessage = 'Please fill in all required fields.';
+      this.leadSuccessMessage = '';
+      return;
+    }
+
+    this.isSubmittingLead = true;
+    this.leadErrorMessage = '';
+    this.leadSuccessMessage = '';
+
+    try {
+      const response = await fetch(`${this.leadApiBaseUrl}/leads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fullName, email, phone, serviceType, message })
+      });
+
+      if (!response.ok) {
+        throw new Error('Lead request failed.');
+      }
+
+      form.reset();
+      this.leadSuccessMessage = 'Thanks. Your quote request was sent successfully.';
+    } catch {
+      this.leadErrorMessage = 'Unable to submit right now. Please try again shortly.';
+    } finally {
+      this.isSubmittingLead = false;
+    }
+  }
 }

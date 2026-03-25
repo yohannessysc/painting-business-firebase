@@ -13,11 +13,11 @@ const corsHandler = cors({ origin: true });
 app.use(express.json());
 app.use(corsHandler);
 
-app.get("/health", (_req: Request, res: Response) => {
+app.get(["/health", "/api/health"], (_req: Request, res: Response) => {
   res.status(200).json({ ok: true, service: "painting-business-api" });
 });
 
-app.post("/leads", async (req: Request, res: Response) => {
+app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
   const { fullName, email, phone, serviceType, message } = req.body ?? {};
 
   if (!fullName || !email || !phone || !serviceType) {

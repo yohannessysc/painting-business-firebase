@@ -15,7 +15,6 @@
     <h1>Fresh Color. Clean Craftsmanship. Reliable Service.</h1>
     <p>
       We are building <strong>{{ companyName }}</strong> to be your go-to local painting team.
-      This first launch includes placeholder projects while we complete real portfolio uploads.
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="#contact">Get A Free Quote</a>
@@ -92,20 +91,46 @@
       <p>Email: hello@evolutionpainting.com</p>
       <p>Phone: (000) 000-0000</p>
     </div>
-    <form class="quote-form" aria-label="Quote request form">
+    <form class="quote-form" aria-label="Quote request form" (submit)="submitLead($event)">
       <label>
         Full name
-        <input type="text" placeholder="Jane Doe" />
+        <input type="text" name="fullName" placeholder="Jane Doe" required />
       </label>
       <label>
         Email
-        <input type="email" placeholder="jane@email.com" />
+        <input type="email" name="email" placeholder="jane@email.com" required />
+      </label>
+      <label>
+        Phone
+        <input type="tel" name="phone" placeholder="(000) 000-0000" required />
+      </label>
+      <label>
+        Service needed
+        <select name="serviceType" required>
+          <option value="">Select a service</option>
+          <option value="Interior Painting">Interior Painting</option>
+          <option value="Exterior Painting">Exterior Painting</option>
+          <option value="Cabinet Refinishing">Cabinet Refinishing</option>
+          <option value="Commercial Spaces">Commercial Spaces</option>
+        </select>
       </label>
       <label>
         Project details
-        <textarea rows="4" placeholder="Interior repaint, 3 bedrooms, 2 bathrooms"></textarea>
+        <textarea
+          rows="4"
+          name="message"
+          placeholder="Interior repaint, 3 bedrooms, 2 bathrooms"
+        ></textarea>
       </label>
-      <button type="button" class="btn btn-primary">Submit Placeholder Form</button>
+      @if (leadSuccessMessage) {
+        <p class="form-feedback form-feedback--success">{{ leadSuccessMessage }}</p>
+      }
+      @if (leadErrorMessage) {
+        <p class="form-feedback form-feedback--error">{{ leadErrorMessage }}</p>
+      }
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmittingLead">
+        {{ isSubmittingLead ? 'Submitting...' : 'Submit Quote Request' }}
+      </button>
     </form>
   </section>
 </main>
