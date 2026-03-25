@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { initializeApp } from 'firebase/app';
+import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore';
 
 type ServiceItem = {
   title: string;
@@ -19,7 +21,6 @@ type GalleryItem = {
 })
 export class App {
   protected readonly companyName = 'Evolution Painting Solutions';
-  protected readonly leadApiBaseUrl = '/api';
   protected isSubmittingLead = false;
   protected leadSuccessMessage = '';
   protected leadErrorMessage = '';
@@ -87,17 +88,17 @@ export class App {
     this.leadSuccessMessage = '';
 
     try {
-      const response = await fetch(`${this.leadApiBaseUrl}/leads`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ fullName, email, phone, serviceType, message })
+      await addDoc(collection(db, 'leads'), {
+        fullName,
+        email,
+        phone,
+        serviceType,
+        message,
+        status: 'new',
+        source: 'website',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
-
-      if (!response.ok) {
-        throw new Error('Lead request failed.');
-      }
 
       form.reset();
       this.leadSuccessMessage = 'Thanks. Your quote request was sent successfully.';
@@ -108,3 +109,16 @@ export class App {
     }
   }
 }
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyCCsjDpH_BQz7QgbsMvZoCzbSHEb-n86wI',
+  authDomain: 'eps-yk-2026.firebaseapp.com',
+  projectId: 'eps-yk-2026',
+  storageBucket: 'eps-yk-2026.firebasestorage.app',
+  messagingSenderId: '519998080878',
+  appId: '1:519998080878:web:39443bc7b647167723e37f',
+  measurementId: 'G-ZPZ8RZ1TQG'
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);

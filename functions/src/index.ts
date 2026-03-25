@@ -6,8 +6,9 @@ import { onRequest } from "firebase-functions/v2/https";
 
 initializeApp();
 
-const app = express();
 const db = getFirestore();
+
+const app = express();
 const corsHandler = cors({ origin: true });
 
 app.use(express.json());
@@ -35,11 +36,16 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     status: "new",
     source: "website",
     createdAt: now,
-    updatedAt: now
+    updatedAt: now,
   };
 
-  const docRef = await db.collection("leads").add(lead);
-  res.status(201).json({ id: docRef.id });
+  try {
+    const docRef = await db.collection("leads").add(lead);
+    res.status(201).json({ id: docRef.id });
+  } catch (error) {
+    console.error("Failed to save lead", error);
+    res.status(500).json({ error: "Failed to save lead" });
+  }
 });
 
 export const api = onRequest({ region: "us-central1" }, app);
