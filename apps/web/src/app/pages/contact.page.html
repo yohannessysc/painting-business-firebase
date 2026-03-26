@@ -32,9 +32,8 @@
     </label>
     <label>
       Consultation type
-      <select name="consultationType" required>
-        <option value="">Choose one</option>
-        <option value="In-Person Consultation">In-Person Consultation</option>
+      <select name="consultationType" required (change)="handleConsultationTypeChange($event)">
+        <option value="In-Person Consultation" selected>In-Person Consultation</option>
         <option value="Virtual Consultation">Virtual Consultation</option>
         <option value="Phone Planning Call">Phone Planning Call</option>
       </select>
@@ -42,19 +41,19 @@
     <div class="booking-grid">
       <label>
         Preferred date
-        <input type="date" name="preferredDate" [min]="minBookingDate" />
+        <input type="date" name="preferredDate" [min]="minBookingDate" (change)="handlePreferredDateChange($event)" />
       </label>
       <label>
         Preferred time slot
         <select name="preferredTimeSlot" required>
           <option value="">Select a slot</option>
-          <option value="8:00 AM - 10:00 AM">8:00 AM - 10:00 AM</option>
-          <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
-          <option value="12:00 PM - 2:00 PM">12:00 PM - 2:00 PM</option>
-          <option value="2:00 PM - 4:00 PM">2:00 PM - 4:00 PM</option>
-          <option value="4:00 PM - 6:00 PM">4:00 PM - 6:00 PM</option>
-          <option value="Evening Callback">Evening Callback</option>
+          @for (slot of availableTimeSlots; track slot) {
+            <option [value]="slot">{{ slot }}</option>
+          }
         </select>
+        @if (isLoadingSlots) {
+          <small>Checking current availability...</small>
+        }
       </label>
     </div>
     <label>

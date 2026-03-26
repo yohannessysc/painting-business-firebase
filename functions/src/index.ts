@@ -247,4 +247,26 @@ app.post(["/estimates", "/api/estimates"], (req: Request, res: Response) => {
   });
 });
 
+app.get(["/slots", "/api/slots"], (req: Request, res: Response) => {
+  const consultationType = String(req.query.consultationType ?? "").trim();
+  const preferredDate = String(req.query.preferredDate ?? "").trim();
+
+  if (
+    !allowedConsultationTypes.includes(
+      consultationType as (typeof allowedConsultationTypes)[number],
+    )
+  ) {
+    res.status(400).json({ error: "Unsupported consultation type" });
+    return;
+  }
+
+  if (!isValidIsoDate(preferredDate)) {
+    res.status(400).json({ error: "Invalid preferred date format" });
+    return;
+  }
+
+  const slots = getAvailableSlots(consultationType, preferredDate || undefined);
+  res.status(200).json({ ok: true, slots });
+});
+
 export const api = onRequest({ region: "us-central1" }, app);
