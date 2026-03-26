@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+  <title id="t">Commercial Painting Activity</title>
+  <desc id="d">Commercial crew painting an office wall section.</desc>
+  <rect width="1200" height="800" fill="#edf2f4"/>
+  <rect x="90" y="90" width="1020" height="620" rx="24" fill="#ffffff" stroke="#cfd6da" stroke-width="6"/>
+  <rect x="170" y="170" width="860" height="430" rx="18" fill="#f2ece2"/>
+  <rect x="220" y="220" width="330" height="330" rx="16" fill="#d97745"/>
+  <rect x="610" y="220" width="360" height="330" rx="16" fill="#e2ecef"/>
+  <circle cx="640" cy="350" r="38" fill="#f0bf98"/>
+  <rect x="600" y="390" width="80" height="130" rx="20" fill="#155e73"/>
+  <rect x="675" y="300" width="150" height="24" rx="12" fill="#155e73"/>
+  <rect x="742" y="322" width="16" height="120" rx="8" fill="#155e73"/>
+  <circle cx="740" cy="560" r="20" fill="#d97745"/>
+</svg>

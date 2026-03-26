@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+  <title id="t">Cabinet Refinishing Activity</title>
+  <desc id="d">Painter spraying cabinet doors with a smooth finish.</desc>
+  <rect width="1200" height="800" fill="#f6f1e8"/>
+  <rect x="90" y="90" width="1020" height="620" rx="28" fill="#ffffff" stroke="#d9d1c5" stroke-width="6"/>
+  <rect x="170" y="200" width="360" height="420" rx="18" fill="#155e73"/>
+  <rect x="250" y="240" width="200" height="150" rx="14" fill="#e7eff1"/>
+  <rect x="250" y="430" width="200" height="150" rx="14" fill="#e7eff1"/>
+  <circle cx="438" cy="314" r="8" fill="#d97745"/>
+  <circle cx="438" cy="504" r="8" fill="#d97745"/>
+  <circle cx="760" cy="300" r="44" fill="#f0bf98"/>
+  <rect x="712" y="344" width="96" height="150" rx="22" fill="#155e73"/>
+  <rect x="808" y="380" width="120" height="34" rx="17" fill="#0e3946"/>
+  <circle cx="948" cy="397" r="12" fill="#d97745"/>
+  <circle cx="974" cy="397" r="10" fill="#d97745" opacity="0.7"/>
+</svg>

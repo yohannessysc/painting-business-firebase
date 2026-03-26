@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+  <title id="t">Exterior Painting Activity</title>
+  <desc id="d">Painter on ladder applying exterior paint.</desc>
+  <rect width="1200" height="800" fill="#eaf0f3"/>
+  <rect x="90" y="120" width="1020" height="560" rx="26" fill="#ffffff" stroke="#cfd8dc" stroke-width="6"/>
+  <rect x="170" y="210" width="520" height="390" rx="18" fill="#f1ede5"/>
+  <polygon points="170,210 430,90 690,210" fill="#155e73"/>
+  <line x1="760" y1="250" x2="920" y2="250" stroke="#d97745" stroke-width="20" stroke-linecap="round"/>
+  <rect x="830" y="262" width="20" height="134" rx="8" fill="#155e73"/>
+  <line x1="740" y1="600" x2="860" y2="340" stroke="#8a97a0" stroke-width="14"/>
+  <line x1="810" y1="600" x2="930" y2="340" stroke="#8a97a0" stroke-width="14"/>
+  <line x1="770" y1="520" x2="890" y2="520" stroke="#8a97a0" stroke-width="12"/>
+  <line x1="790" y1="460" x2="910" y2="460" stroke="#8a97a0" stroke-width="12"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+  <title id="t">Interior Painting Activity</title>
+  <desc id="d">Painter rolling a fresh coat on an interior wall.</desc>
+  <rect width="1200" height="800" fill="#f8f3ea"/>
+  <rect x="80" y="80" width="1040" height="640" rx="30" fill="#ffffff" stroke="#d8d1c6" stroke-width="6"/>
+  <rect x="150" y="150" width="470" height="470" rx="22" fill="#e7eff1"/>
+  <rect x="690" y="150" width="360" height="44" rx="22" fill="#d97745"/>
+  <rect x="842" y="194" width="56" height="176" rx="16" fill="#155e73"/>
+  <circle cx="770" cy="350" r="46" fill="#f1c09a"/>
+  <rect x="728" y="394" width="84" height="130" rx="22" fill="#155e73"/>
+  <rect x="160" y="640" width="880" height="40" rx="18" fill="#eee6da"/>
+</svg>

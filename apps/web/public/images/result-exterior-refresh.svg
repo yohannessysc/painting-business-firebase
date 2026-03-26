@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+  <title id="t">Exterior Refresh Result</title>
+  <desc id="d">Split view showing exterior before and refreshed after paint.</desc>
+  <rect width="1200" height="800" fill="#f7f2e8"/>
+  <rect x="80" y="90" width="1040" height="620" rx="28" fill="#ffffff" stroke="#d8d0c4" stroke-width="6"/>
+  <rect x="130" y="150" width="450" height="500" rx="18" fill="#ddd8cf"/>
+  <rect x="620" y="150" width="450" height="500" rx="18" fill="#e8eff2"/>
+  <polygon points="130,220 355,110 580,220" fill="#9ba2a8"/>
+  <polygon points="620,220 845,110 1070,220" fill="#155e73"/>
+  <text x="290" y="640" font-family="Manrope, Arial" font-size="28" font-weight="700" fill="#7a8084">Before</text>
+  <text x="795" y="640" font-family="Manrope, Arial" font-size="28" font-weight="800" fill="#155e73">After</text>
+</svg>

@@ -4,6 +4,7 @@ import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { onRequest } from "firebase-functions/v2/https";
+import { buildSeedPayload, LeadDocument } from "./modules/firestore-schema";
 
 initializeApp();
 
@@ -245,7 +246,7 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
   }
 
   const now = Timestamp.now();
-  const lead = {
+  const lead: LeadDocument = {
     fullName: normalizedFullName,
     email: normalizedEmail,
     phone: normalizedPhone,
@@ -258,6 +259,7 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     source: "website",
     createdAt: now,
     updatedAt: now,
+    schemaVersion: "v1",
   };
 
   try {
@@ -401,5 +403,61 @@ app.patch(
     }
   },
 );
+
+app.post(["/admin/seed", "/api/admin/seed"], async (req: AuthenticatedRequest, res: Response) => {
+  if (!(await requireAdmin(req, res))) {
+    return;
+  }
+
+  const adminUserId = String(req.body?.adminUserId ?? req.userId ?? "").trim();
+  const adminEmail = String(req.body?.adminEmail ?? "").trim().toLowerCase();
+  const dryRun = Boolean(req.body?.dryRun);
+
+  if (!adminUserId) {
+    res.status(400).json({ error: "adminUserId is required" });
+    return;
+  }
+
+  const now = Timestamp.now();
+  const seedPayload = buildSeedPayload({
+    now,
+    adminUserId,
+    adminEmail: adminEmail || undefined,
+  });
+
+  const writes = [
+    ...Object.entries(seedPayload.users).map(([id, data]) => ({ collection: "users", id, data })),
+    ...Object.entries(seedPayload.customers).map(([id, data]) => ({ collection: "customers", id, data })),
+    ...Object.entries(seedPayload.jobs).map(([id, data]) => ({ collection: "jobs", id, data })),
+    ...Object.entries(seedPayload.leads).map(([id, data]) => ({ collection: "leads", id, data })),
+  ];
+
+  if (dryRun) {
+    res.status(200).json({
+      ok: true,
+      mode: "dryRun",
+      documents: writes.map((write) => `${write.collection}/${write.id}`),
+    });
+    return;
+  }
+
+  try {
+    const batch = db.batch();
+    for (const write of writes) {
+      batch.set(db.collection(write.collection).doc(write.id), write.data, { merge: true });
+    }
+
+    await batch.commit();
+
+    res.status(200).json({
+      ok: true,
+      seededCount: writes.length,
+      documents: writes.map((write) => `${write.collection}/${write.id}`),
+    });
+  } catch (error) {
+    console.error("Failed to seed Firestore collections", error);
+    res.status(500).json({ error: "Failed to seed Firestore collections" });
+  }
+});
 
 export const api = onRequest({ region: "us-central1" }, app);

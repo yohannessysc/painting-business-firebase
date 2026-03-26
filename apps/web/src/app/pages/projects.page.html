@@ -1,0 +1,18 @@
+<section class="section">
+  <div class="section-header">
+    <p class="eyebrow">Recent Project Work</p>
+    <h1>On-Site Results From Real Painting Jobs</h1>
+  </div>
+
+  <div class="results-grid">
+    @for (item of results; track item.title) {
+      <figure class="result-card">
+        <img [src]="item.imageUrl" [alt]="item.imageAlt" loading="lazy" (error)="handleImageError($event)" />
+        <figcaption>
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.description }}</span>
+        </figcaption>
+      </figure>
+    }
+  </div>
+</section>

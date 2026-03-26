@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+  <title id="t">Interior Repaint Result</title>
+  <desc id="d">Interior wall transformation after repaint.</desc>
+  <rect width="1200" height="800" fill="#f6f0e5"/>
+  <rect x="90" y="100" width="1020" height="600" rx="24" fill="#ffffff" stroke="#dad2c7" stroke-width="6"/>
+  <rect x="150" y="160" width="400" height="470" rx="16" fill="#b6b0a7"/>
+  <rect x="650" y="160" width="400" height="470" rx="16" fill="#dce9ed"/>
+  <rect x="250" y="560" width="200" height="60" rx="16" fill="#9b958d"/>
+  <rect x="750" y="560" width="200" height="60" rx="16" fill="#155e73"/>
+  <text x="250" y="640" font-family="Manrope, Arial" font-size="27" font-weight="700" fill="#6f6960">Before</text>
+  <text x="770" y="640" font-family="Manrope, Arial" font-size="27" font-weight="800" fill="#155e73">After</text>
+</svg>

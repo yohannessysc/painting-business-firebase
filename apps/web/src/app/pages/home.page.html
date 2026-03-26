@@ -1,0 +1,119 @@
+<section class="hero">
+  <img
+    class="hero-image"
+    [src]="heroImage"
+    alt="Painting team working on wall renovation"
+    loading="eager"
+    (error)="handleImageError($event)"
+  />
+  <div class="hero-overlay">
+    <p class="eyebrow">Licensed | Insured | Detail-Focused</p>
+    <h1>Real Craftsmanship For Homes And Businesses That Need It Done Right.</h1>
+    <p>
+      <strong>{{ companyName }}</strong> delivers prep-first painting with clean job sites, clear
+      timelines, and finishes that hold up over time.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" routerLink="/contact">Request Free Quote</a>
+      <a class="btn btn-secondary" routerLink="/services">See Services</a>
+    </div>
+  </div>
+</section>
+
+<section class="trust-strip" aria-label="Trust indicators">
+  @for (item of trustHighlights; track item.label) {
+    <article>
+      <p class="value">{{ item.value }}</p>
+      <p class="label">{{ item.label }}</p>
+    </article>
+  }
+</section>
+
+<section class="priorities">
+  <div class="section-head">
+    <p class="eyebrow eyebrow-dark">What Makes Us Different</p>
+    <h2>Quality-Driven Painting Without The Usual Stress</h2>
+  </div>
+  <div class="priority-grid">
+    @for (item of customerPriorities; track item.title) {
+      <article>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </article>
+    }
+  </div>
+</section>
+
+<section class="service-teaser">
+  <div class="section-head">
+    <p class="eyebrow eyebrow-dark">Core Services</p>
+    <h2>Popular Painting Services In Ottawa And Surrounding Areas</h2>
+  </div>
+  <div class="teaser-grid">
+    @for (item of featuredServices; track item.title) {
+      <article>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+        <a class="teaser-link" [routerLink]="item.route">Get A Quote</a>
+      </article>
+    }
+  </div>
+</section>
+
+<section class="quote-process" aria-label="Three-step quote process">
+  <div class="section-head">
+    <p class="eyebrow eyebrow-dark">Our 3-Step Process</p>
+    <h2>Simple From First Message To Final Walkthrough</h2>
+  </div>
+  <div class="quote-step-grid">
+    @for (item of quoteSteps; track item.title) {
+      <article>
+        <p class="step-tag">{{ item.step }}</p>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </article>
+    }
+  </div>
+</section>
+
+<section class="startup-message">
+  <div>
+    <p class="eyebrow eyebrow-dark">Startup Transparency</p>
+    <h2>We Are New, So Every Project Gets Full Attention</h2>
+    <p>
+      As a startup team, our reputation depends on each result. That means careful prep, frequent
+      communication, and no rushed closeout.
+    </p>
+  </div>
+  <ul>
+    @for (point of startupPromise; track point) {
+      <li>{{ point }}</li>
+    }
+  </ul>
+</section>
+
+<section class="consultation-paths" aria-label="Consultation options">
+  <div class="section-head">
+    <p class="eyebrow eyebrow-dark">Choose Your Quote Method</p>
+    <h2>Pick The Consultation Style That Fits Your Schedule</h2>
+  </div>
+  <div class="consultation-grid">
+    @for (item of consultationOptions; track item.title) {
+      <article>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+        <a class="teaser-link" routerLink="/contact">{{ item.cta }}</a>
+      </article>
+    }
+  </div>
+</section>
+
+<section class="home-cta">
+  <h2>Ready For A Fresh, Professional Finish?</h2>
+  <p>Tell us your scope and timing, and we will send a clear quote with practical next steps.</p>
+  <p class="micro-note">No account setup. No captcha friction. Just a direct response from our team.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" routerLink="/contact">Start Your Quote</a>
+    <a class="btn btn-secondary" routerLink="/projects">View Project Results</a>
+  </div>
+</section>

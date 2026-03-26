@@ -1,0 +1,16 @@
+<section class="section">
+  <div class="section-header">
+    <p class="eyebrow">Our Workflow</p>
+    <h1>Clear Steps From Quote To Final Walkthrough</h1>
+  </div>
+
+  <div class="process-line">
+    @for (step of processSteps; track step.title) {
+      <article class="process-step">
+        <p class="step-number">{{ step.number }}</p>
+        <h2>{{ step.title }}</h2>
+        <p>{{ step.description }}</p>
+      </article>
+    }
+  </div>
+</section>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
+  <title id="t">Cabinet Makeover Result</title>
+  <desc id="d">Cabinet set shown before and after refinishing.</desc>
+  <rect width="1200" height="800" fill="#f7f2e8"/>
+  <rect x="80" y="90" width="1040" height="620" rx="26" fill="#ffffff" stroke="#d7d0c4" stroke-width="6"/>
+  <rect x="140" y="150" width="420" height="500" rx="18" fill="#c8ad86"/>
+  <rect x="640" y="150" width="420" height="500" rx="18" fill="#155e73"/>
+  <rect x="210" y="220" width="280" height="150" rx="14" fill="#e8d6bd"/>
+  <rect x="210" y="430" width="280" height="150" rx="14" fill="#e8d6bd"/>
+  <rect x="710" y="220" width="280" height="150" rx="14" fill="#dbe8ec"/>
+  <rect x="710" y="430" width="280" height="150" rx="14" fill="#dbe8ec"/>
+  <text x="265" y="640" font-family="Manrope, Arial" font-size="27" font-weight="700" fill="#8b6f4e">Before</text>
+  <text x="770" y="640" font-family="Manrope, Arial" font-size="27" font-weight="800" fill="#155e73">After</text>
+</svg>
