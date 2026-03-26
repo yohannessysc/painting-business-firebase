@@ -1,0 +1,101 @@
+<section class="section admin-shell">
+  <div class="section-head">
+    <p class="eyebrow">Admin</p>
+    <h1>Lead Operations Dashboard</h1>
+  </div>
+
+  @if (!isAuthenticated) {
+    <form class="login-form" (submit)="login(); $event.preventDefault()" aria-label="Admin login form">
+      <label>
+        Admin email
+        <input type="email" [(ngModel)]="email" name="email" required />
+      </label>
+      <label>
+        Password
+        <input type="password" [(ngModel)]="password" name="password" required />
+      </label>
+      @if (authMessage) {
+        <p class="feedback feedback--error">{{ authMessage }}</p>
+      }
+      <button type="submit" class="btn-primary" [disabled]="isLoadingAuth">
+        {{ isLoadingAuth ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+  } @else {
+    <div class="admin-toolbar">
+      <p class="session-meta">Signed in as <strong>{{ adminEmail }}</strong></p>
+      <div class="toolbar-controls">
+        <label>
+          Status filter
+          <select [(ngModel)]="statusFilter" name="statusFilter" (change)="loadLeads()">
+            <option value="">All</option>
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Limit
+          <select [(ngModel)]="leadLimit" name="leadLimit" (change)="loadLeads()">
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+          </select>
+        </label>
+        <button type="button" class="btn-secondary" (click)="loadLeads()" [disabled]="isLoadingLeads">
+          Refresh
+        </button>
+        <button type="button" class="btn-secondary" (click)="logout()">Logout</button>
+      </div>
+    </div>
+
+    @if (leadsError) {
+      <p class="feedback feedback--error">{{ leadsError }}</p>
+    }
+
+    @if (isLoadingLeads) {
+      <p class="feedback">Loading leads...</p>
+    }
+
+    <div class="lead-list" aria-label="Lead records">
+      @for (lead of leads; track lead.id) {
+        <article class="lead-card">
+          <header>
+            <h2>{{ lead.fullName }}</h2>
+            <span class="status-pill">{{ lead.status }}</span>
+          </header>
+
+          <p><strong>Email:</strong> {{ lead.email }}</p>
+          <p><strong>Phone:</strong> {{ lead.phone }}</p>
+          <p><strong>Service:</strong> {{ lead.serviceType }}</p>
+          <p><strong>Consultation:</strong> {{ lead.consultationType }}</p>
+          <p><strong>Preferred Date:</strong> {{ lead.preferredDate || 'Not specified' }}</p>
+          <p><strong>Time Slot:</strong> {{ lead.preferredTimeSlot }}</p>
+          <p><strong>Submitted:</strong> {{ lead.createdAt | date: 'medium' }}</p>
+          @if (lead.message) {
+            <p><strong>Notes:</strong> {{ lead.message }}</p>
+          }
+
+          <label class="status-control">
+            Update status
+            <select
+              [ngModel]="lead.status"
+              [name]="'status-' + lead.id"
+              (ngModelChange)="updateLeadStatus(lead.id, $event)"
+              [disabled]="updatingLeadId === lead.id"
+            >
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+          </label>
+        </article>
+      }
+    </div>
+
+    @if (!isLoadingLeads && leads.length === 0) {
+      <p class="feedback">No leads found for this filter.</p>
+    }
+  }
+</section>
