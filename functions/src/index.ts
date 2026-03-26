@@ -1,12 +1,16 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
 import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { onRequest } from "firebase-functions/v2/https";
 
 initializeApp();
 
 const db = getFirestore();
+const auth = getAuth();
+
+type AuthenticatedRequest = Request & { userId?: string };
 
 const allowedServiceTypes = [
   "Interior Painting",
@@ -68,6 +72,7 @@ function getAvailableSlots(consultationType: string, preferredDate?: string): st
 
 const allowedProjectSizes = ["small", "medium", "large"] as const;
 const allowedConditions = ["light", "standard", "heavy"] as const;
+const allowedLeadStatuses = ["new", "contacted", "scheduled", "closed"] as const;
 
 type EstimateInput = {
   serviceType: string;
@@ -102,6 +107,60 @@ function calculateEstimateRange(input: EstimateInput): { low: number; high: numb
   const high = Math.round((estimate * 1.15) / 50) * 50;
 
   return { low, high };
+}
+
+async function isAdminUser(userId: string): Promise<boolean> {
+  const userDoc = await db.collection("users").doc(userId).get();
+  return userDoc.exists && userDoc.data()?.role === "admin";
+}
+
+async function requireAdmin(req: AuthenticatedRequest, res: Response): Promise<boolean> {
+  const authHeader = String(req.headers.authorization ?? "").trim();
+  if (!authHeader.startsWith("Bearer ")) {
+    res.status(401).json({ error: "Missing authorization token" });
+    return false;
+  }
+
+  const token = authHeader.slice("Bearer ".length).trim();
+  if (!token) {
+    res.status(401).json({ error: "Missing authorization token" });
+    return false;
+  }
+
+  try {
+    const decoded = await auth.verifyIdToken(token);
+    if (!(await isAdminUser(decoded.uid))) {
+      res.status(403).json({ error: "Admin access required" });
+      return false;
+    }
+
+    req.userId = decoded.uid;
+    return true;
+  } catch {
+    res.status(401).json({ error: "Invalid authorization token" });
+    return false;
+  }
+}
+
+function normalizePositiveLimit(raw: string, fallback = 25): number {
+  const parsed = Number.parseInt(raw, 10);
+  if (Number.isNaN(parsed) || parsed <= 0) {
+    return fallback;
+  }
+
+  return Math.min(parsed, 100);
+}
+
+function serializeLead(data: Record<string, unknown>, id: string): Record<string, unknown> {
+  const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : data.createdAt;
+  const updatedAt = data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : data.updatedAt;
+
+  return {
+    id,
+    ...data,
+    createdAt,
+    updatedAt,
+  };
 }
 
 const app = express();
@@ -268,5 +327,79 @@ app.get(["/slots", "/api/slots"], (req: Request, res: Response) => {
   const slots = getAvailableSlots(consultationType, preferredDate || undefined);
   res.status(200).json({ ok: true, slots });
 });
+
+app.get(["/admin/leads", "/api/admin/leads"], async (req: AuthenticatedRequest, res: Response) => {
+  if (!(await requireAdmin(req, res))) {
+    return;
+  }
+
+  const status = String(req.query.status ?? "").trim();
+  const limit = normalizePositiveLimit(String(req.query.limit ?? "25"));
+
+  if (status && !allowedLeadStatuses.includes(status as (typeof allowedLeadStatuses)[number])) {
+    res.status(400).json({ error: "Unsupported lead status filter" });
+    return;
+  }
+
+  try {
+    let query = db.collection("leads").orderBy("createdAt", "desc").limit(limit);
+    if (status) {
+      query = query.where("status", "==", status);
+    }
+
+    const snapshot = await query.get();
+    const leads = snapshot.docs.map((doc) =>
+      serializeLead(doc.data() as Record<string, unknown>, doc.id),
+    );
+
+    res.status(200).json({ ok: true, count: leads.length, leads });
+  } catch (error) {
+    console.error("Failed to list leads", error);
+    res.status(500).json({ error: "Failed to list leads" });
+  }
+});
+
+app.patch(
+  ["/admin/leads/:leadId/status", "/api/admin/leads/:leadId/status"],
+  async (req: AuthenticatedRequest, res: Response) => {
+    if (!(await requireAdmin(req, res))) {
+      return;
+    }
+
+    const leadId = String(req.params.leadId ?? "").trim();
+    const nextStatus = String(req.body?.status ?? "").trim();
+
+    if (!leadId) {
+      res.status(400).json({ error: "Lead id is required" });
+      return;
+    }
+
+    if (!allowedLeadStatuses.includes(nextStatus as (typeof allowedLeadStatuses)[number])) {
+      res.status(400).json({ error: "Unsupported lead status" });
+      return;
+    }
+
+    const leadRef = db.collection("leads").doc(leadId);
+
+    try {
+      const snapshot = await leadRef.get();
+      if (!snapshot.exists) {
+        res.status(404).json({ error: "Lead not found" });
+        return;
+      }
+
+      await leadRef.update({
+        status: nextStatus,
+        updatedAt: Timestamp.now(),
+        updatedBy: req.userId ?? "system",
+      });
+
+      res.status(200).json({ ok: true, id: leadId, status: nextStatus });
+    } catch (error) {
+      console.error("Failed to update lead status", error);
+      res.status(500).json({ error: "Failed to update lead status" });
+    }
+  },
+);
 
 export const api = onRequest({ region: "us-central1" }, app);
