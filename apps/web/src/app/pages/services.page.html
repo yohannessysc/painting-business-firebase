@@ -1,0 +1,101 @@
+<section class="section">
+  <div class="section-header">
+    <p class="eyebrow">What We Do</p>
+    <h1>Services Built Around Real Painting Workflows</h1>
+  </div>
+  <div class="services-stack">
+    @for (service of services; track service.title; let i = $index) {
+      <article class="service-row" [class.service-row--reverse]="i % 2 === 1">
+        <img [src]="service.imageUrl" [alt]="service.imageAlt" loading="lazy" (error)="handleImageError($event)" />
+        <div>
+          <h2>{{ service.title }}</h2>
+          <p>{{ service.description }}</p>
+          <ul>
+            @for (point of service.highlights; track point) {
+              <li>{{ point }}</li>
+            }
+          </ul>
+        </div>
+      </article>
+    }
+  </div>
+</section>
+
+<section class="section estimator-panel">
+  <div class="section-header">
+    <p class="eyebrow">Quick Estimator</p>
+    <h2>Get A Rough Budget Range Before Booking</h2>
+  </div>
+  <form class="estimator-form" (submit)="calculateEstimate($event)">
+    <label>
+      Service
+      <select name="serviceType">
+        <option value="Interior Painting">Interior Painting</option>
+        <option value="Exterior Painting">Exterior Painting</option>
+        <option value="Cabinet Refinishing">Cabinet Refinishing</option>
+        <option value="Commercial Spaces">Commercial Spaces</option>
+      </select>
+    </label>
+    <label>
+      Project size
+      <select name="projectSize">
+        <option value="small">Small</option>
+        <option value="medium" selected>Medium</option>
+        <option value="large">Large</option>
+      </select>
+    </label>
+    <label>
+      Surface condition
+      <select name="condition">
+        <option value="light">Light prep needed</option>
+        <option value="standard" selected>Standard prep</option>
+        <option value="heavy">Heavy prep and repairs</option>
+      </select>
+    </label>
+    <button type="submit" class="btn-estimate" [disabled]="isEstimating">
+      {{ isEstimating ? 'Calculating...' : 'Calculate Range' }}
+    </button>
+  </form>
+  @if (estimateResult) {
+    <p class="estimate-result">{{ estimateResult }}</p>
+  }
+  @if (estimateError) {
+    <p class="estimate-error">{{ estimateError }}</p>
+  }
+</section>
+
+<section class="section scope-panel">
+  <article>
+    <p class="eyebrow">What Is Included</p>
+    <h2>Standard Scope On Most Projects</h2>
+    <ul>
+      @for (item of includedScope; track item) {
+        <li>{{ item }}</li>
+      }
+    </ul>
+  </article>
+  <article>
+    <p class="eyebrow">Not Typically Included</p>
+    <h2>Handled As Separate Scope</h2>
+    <ul>
+      @for (item of excludedScope; track item) {
+        <li>{{ item }}</li>
+      }
+    </ul>
+  </article>
+</section>
+
+<section class="section faq-panel">
+  <div class="section-header">
+    <p class="eyebrow">Frequently Asked Questions</p>
+    <h2>Answers Before You Book</h2>
+  </div>
+  <div class="faq-list">
+    @for (faq of serviceFaqs; track faq.question) {
+      <details>
+        <summary>{{ faq.question }}</summary>
+        <p>{{ faq.answer }}</p>
+      </details>
+    }
+  </div>
+</section>

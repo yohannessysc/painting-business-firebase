@@ -66,6 +66,44 @@ function getAvailableSlots(consultationType: string, preferredDate?: string): st
   return baseSlots;
 }
 
+const allowedProjectSizes = ["small", "medium", "large"] as const;
+const allowedConditions = ["light", "standard", "heavy"] as const;
+
+type EstimateInput = {
+  serviceType: string;
+  projectSize: string;
+  condition: string;
+};
+
+function calculateEstimateRange(input: EstimateInput): { low: number; high: number } {
+  const baseByService: Record<string, number> = {
+    "Interior Painting": 1800,
+    "Exterior Painting": 3200,
+    "Cabinet Refinishing": 2200,
+    "Commercial Spaces": 4500,
+  };
+
+  const sizeMultiplier: Record<string, number> = {
+    small: 0.8,
+    medium: 1,
+    large: 1.35,
+  };
+
+  const conditionMultiplier: Record<string, number> = {
+    light: 0.9,
+    standard: 1,
+    heavy: 1.25,
+  };
+
+  const base = baseByService[input.serviceType] ?? 2000;
+  const estimate =
+    base * (sizeMultiplier[input.projectSize] ?? 1) * (conditionMultiplier[input.condition] ?? 1);
+  const low = Math.round((estimate * 0.88) / 50) * 50;
+  const high = Math.round((estimate * 1.15) / 50) * 50;
+
+  return { low, high };
+}
+
 const app = express();
 const corsHandler = cors({ origin: true });
 
@@ -170,6 +208,43 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     console.error("Failed to save lead", error);
     res.status(500).json({ error: "Failed to save lead" });
   }
+});
+
+app.post(["/estimates", "/api/estimates"], (req: Request, res: Response) => {
+  const { serviceType, projectSize, condition } = req.body ?? {};
+
+  const normalizedServiceType = String(serviceType ?? "").trim();
+  const normalizedProjectSize = String(projectSize ?? "").trim();
+  const normalizedCondition = String(condition ?? "").trim();
+
+  if (!allowedServiceTypes.includes(normalizedServiceType as (typeof allowedServiceTypes)[number])) {
+    res.status(400).json({ error: "Unsupported service type" });
+    return;
+  }
+
+  if (!allowedProjectSizes.includes(normalizedProjectSize as (typeof allowedProjectSizes)[number])) {
+    res.status(400).json({ error: "Unsupported project size" });
+    return;
+  }
+
+  if (!allowedConditions.includes(normalizedCondition as (typeof allowedConditions)[number])) {
+    res.status(400).json({ error: "Unsupported surface condition" });
+    return;
+  }
+
+  const range = calculateEstimateRange({
+    serviceType: normalizedServiceType,
+    projectSize: normalizedProjectSize,
+    condition: normalizedCondition,
+  });
+
+  res.status(200).json({
+    ok: true,
+    currency: "CAD",
+    low: range.low,
+    high: range.high,
+    note: "Final pricing is confirmed after consultation.",
+  });
 });
 
 export const api = onRequest({ region: "us-central1" }, app);
