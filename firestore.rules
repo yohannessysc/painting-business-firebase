@@ -12,8 +12,7 @@ service cloud.firestore {
     }
 
     match /leads/{leadId} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin();
+      allow read, write: if isAdmin();
     }
 
     match /customers/{customerId} {

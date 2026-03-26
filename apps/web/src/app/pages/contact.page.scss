@@ -1,0 +1,239 @@
+section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1.15rem;
+  box-shadow: 0 16px 28px -26px rgba(24, 44, 34, 0.42);
+}
+
+.contact-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+h1 {
+  margin-top: 0.45rem;
+  color: var(--brand-deep);
+  font-family: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
+  font-size: clamp(1.4rem, 3.1vw, 2.15rem);
+}
+
+.contact-intro p {
+  margin-top: 0.65rem;
+  color: var(--ink-muted);
+}
+
+.quote-form {
+  border: 1px solid color-mix(in srgb, var(--brand) 16%, var(--line));
+  border-radius: 0.85rem;
+  padding: 0.9rem;
+  background: linear-gradient(180deg, #fff 0%, #f8fbf7 100%);
+  display: grid;
+  gap: 0.66rem;
+}
+
+.quote-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+.booking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.62rem;
+}
+
+.quote-form input,
+.quote-form textarea,
+.quote-form select {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--brand) 16%, #cfdad4);
+  border-radius: 0.65rem;
+  padding: 0.64rem 0.72rem;
+  font: inherit;
+  background: #fff;
+}
+
+.quote-form input:focus,
+.quote-form textarea:focus,
+.quote-form select:focus {
+  outline: 2px solid color-mix(in srgb, var(--brand) 34%, white);
+  outline-offset: 1px;
+}
+
+.btn {
+  text-decoration: none;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.72rem 0.98rem;
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #1d1c1b;
+}
+
+.quote-form button[disabled] {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.form-feedback {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.form-feedback--success {
+  color: var(--ok);
+}
+
+.form-feedback--error {
+  color: #b83232;
+}
+
+.support-panel {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.support-block {
+  border: 1px solid color-mix(in srgb, var(--brand) 16%, var(--line));
+  border-radius: 0.86rem;
+  padding: 0.9rem;
+  background: linear-gradient(180deg, #fff 0%, #f8fbf7 100%);
+}
+
+h2 {
+  margin: 0.45rem 0 0;
+  color: var(--brand-deep);
+  font-family: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
+  font-size: clamp(1.06rem, 2.2vw, 1.34rem);
+}
+
+.support-block p {
+  margin-top: 0.58rem;
+  color: var(--ink-muted);
+  line-height: 1.48;
+  max-width: 54ch;
+}
+
+.area-chips {
+  margin-top: 0.64rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.area-chips span {
+  border: 1px solid color-mix(in srgb, var(--brand) 24%, var(--line));
+  border-radius: 999px;
+  background: #fff;
+  color: var(--brand-deep);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.34rem 0.64rem;
+}
+
+.support-block ul {
+  margin: 0.62rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+  color: var(--ink-muted);
+}
+
+.support-block li {
+  position: relative;
+  padding-left: 1.05rem;
+  line-height: 1.44;
+}
+
+.support-block li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.44rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 80%, #fff);
+}
+
+.support-note {
+  font-size: 0.88rem;
+}
+
+@media (max-width: 980px) {
+  .contact-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .support-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  section {
+    padding: 0.92rem;
+  }
+
+  .quote-form {
+    padding: 0.82rem;
+  }
+
+  .booking-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  section {
+    padding: 0.82rem;
+  }
+
+  .quote-form {
+    padding: 0.74rem;
+  }
+
+  .quote-form label {
+    font-size: 0.86rem;
+  }
+}
+
+@media (max-width: 390px) {
+  h1 {
+    font-size: clamp(1.25rem, 7.2vw, 1.72rem);
+  }
+
+  .btn {
+    font-size: 0.84rem;
+  }
+}

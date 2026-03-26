@@ -1,0 +1,98 @@
+<section class="section contact-panel">
+  <div class="contact-intro">
+    <p class="eyebrow">Contact</p>
+    <h1>Tell Us About Your Project</h1>
+    <p>We respond quickly with a clear scope and a practical timeline.</p>
+    <p><strong>Email:</strong> {{ contactEmail }}</p>
+    <p><strong>Phone:</strong> {{ contactPhone }}</p>
+  </div>
+
+  <form class="quote-form" aria-label="Quote request form" (submit)="submitLead($event)">
+    <label>
+      Full name
+      <input type="text" name="fullName" placeholder="Jane Doe" required />
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" placeholder="jane@email.com" required />
+    </label>
+    <label>
+      Phone
+      <input type="tel" name="phone" placeholder="(000) 000-0000" required />
+    </label>
+    <label>
+      Service needed
+      <select name="serviceType" required>
+        <option value="">Select a service</option>
+        <option value="Interior Painting">Interior Painting</option>
+        <option value="Exterior Painting">Exterior Painting</option>
+        <option value="Cabinet Refinishing">Cabinet Refinishing</option>
+        <option value="Commercial Spaces">Commercial Spaces</option>
+      </select>
+    </label>
+    <label>
+      Consultation type
+      <select name="consultationType" required>
+        <option value="">Choose one</option>
+        <option value="In-Person Consultation">In-Person Consultation</option>
+        <option value="Virtual Consultation">Virtual Consultation</option>
+        <option value="Phone Planning Call">Phone Planning Call</option>
+      </select>
+    </label>
+    <div class="booking-grid">
+      <label>
+        Preferred date
+        <input type="date" name="preferredDate" [min]="minBookingDate" />
+      </label>
+      <label>
+        Preferred time slot
+        <select name="preferredTimeSlot" required>
+          <option value="">Select a slot</option>
+          <option value="8:00 AM - 10:00 AM">8:00 AM - 10:00 AM</option>
+          <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+          <option value="12:00 PM - 2:00 PM">12:00 PM - 2:00 PM</option>
+          <option value="2:00 PM - 4:00 PM">2:00 PM - 4:00 PM</option>
+          <option value="4:00 PM - 6:00 PM">4:00 PM - 6:00 PM</option>
+          <option value="Evening Callback">Evening Callback</option>
+        </select>
+      </label>
+    </div>
+    <label>
+      Project details
+      <textarea rows="4" name="message" placeholder="Scope, area size, and preferred timing"></textarea>
+    </label>
+    @if (leadSuccessMessage) {
+      <p class="form-feedback form-feedback--success">{{ leadSuccessMessage }}</p>
+    }
+    @if (leadErrorMessage) {
+      <p class="form-feedback form-feedback--error">{{ leadErrorMessage }}</p>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="isSubmittingLead">
+      {{ isSubmittingLead ? 'Submitting...' : 'Send Request' }}
+    </button>
+  </form>
+</section>
+
+<section class="section support-panel">
+  <article class="support-block">
+    <p class="eyebrow">Areas We Serve</p>
+    <h2>Serving Ottawa And Nearby Neighborhoods</h2>
+    <p>Not sure if we service your area? Send your postal code and we will confirm quickly.</p>
+    <div class="area-chips" aria-label="Service areas">
+      @for (area of serviceAreas; track area) {
+        <span>{{ area }}</span>
+      }
+    </div>
+  </article>
+
+  <article class="support-block">
+    <p class="eyebrow">What To Expect</p>
+    <h2>Flexible Consultation Options</h2>
+    <ul>
+      @for (mode of consultationModes; track mode) {
+        <li>{{ mode }}</li>
+      }
+    </ul>
+    <p class="support-note">Typical response time: within 48 hours for complete quote requests.</p>
+  </article>
+</section>
