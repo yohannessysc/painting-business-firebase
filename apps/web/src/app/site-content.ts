@@ -57,7 +57,7 @@ export const services: ServiceItem[] = [
     description:
       'Exterior coatings for siding, stucco, trim, and doors with weather-smart preparation and finish systems.',
     imageUrl: '/images/stock/service-exterior.jpg',
-    imageAlt: 'Exterior prep and painting activity on a house facade',
+    imageAlt: 'Exterior house entry and railing area ready for outdoor painting work',
     highlights: ['Wash, scrape, and prime sequence', 'Detailed caulking and crack fill', 'UV and moisture-resistant top coats']
   },
   {
@@ -65,7 +65,7 @@ export const services: ServiceItem[] = [
     description:
       'Kitchen and built-in cabinet repainting that delivers a durable, smooth finish without full replacement costs.',
     imageUrl: '/images/stock/service-cabinet.jpg',
-    imageAlt: 'Painter working carefully on detailed surface refinishing',
+    imageAlt: 'Kitchen cabinet surfaces and trim prepared for refinishing',
     highlights: ['Degrease, sand, and bond-prime', 'Spray and brush combination by surface', 'Hardware-safe masking and reassembly']
   },
   {
@@ -73,7 +73,7 @@ export const services: ServiceItem[] = [
     description:
       'Office, retail, and rental-unit painting delivered in phases to keep operations moving with minimal downtime.',
     imageUrl: '/images/stock/service-commercial.jpg',
-    imageAlt: 'Commercial painting team working on an interior renovation site',
+    imageAlt: 'Office workspace interior representing commercial painting projects',
     highlights: ['After-hours and staged scheduling', 'Clear daily completion targets', 'Site protection and cleanup protocol']
   }
 ];

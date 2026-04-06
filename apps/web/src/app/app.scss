@@ -1,12 +1,12 @@
 :host {
-  --bg: #f4f6f8;
+  --bg: #f3f5f7;
   --panel: #ffffff;
-  --ink: #1f2d3a;
-  --ink-muted: #5a6674;
-  --brand: #1f4f6b;
-  --brand-deep: #16384e;
-  --accent: #bf7a2f;
-  --line: #d8e0e7;
+  --ink: #1b2733;
+  --ink-muted: #596675;
+  --brand: #1e4862;
+  --brand-deep: #122f43;
+  --accent: #b97832;
+  --line: #d3dde6;
   --ok: #2f6f52;
   --page-gutter: 1rem;
   --page-gutter-mobile: 0.62rem;
@@ -22,9 +22,9 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 12% 0%, #eef5f9 0%, transparent 34%),
-    radial-gradient(circle at 88% 0%, #f2f6f9 0%, transparent 38%),
-    linear-gradient(165deg, #f8fafc 0%, #eef3f7 100%);
+    radial-gradient(circle at 12% 0%, #edf3f8 0%, transparent 35%),
+    radial-gradient(circle at 88% 0%, #f3f6f9 0%, transparent 38%),
+    linear-gradient(165deg, #f8fafc 0%, #edf2f6 100%);
 }
 
 .topbar-shell {
@@ -34,7 +34,7 @@
   right: 0;
   z-index: 40;
   padding: 0.6rem var(--page-gutter) 0;
-  background: linear-gradient(180deg, rgba(244, 246, 248, 0.98) 0%, rgba(244, 246, 248, 0.86) 65%, rgba(244, 246, 248, 0) 100%);
+  background: linear-gradient(180deg, rgba(19, 47, 68, 0.95) 0%, rgba(19, 47, 68, 0.86) 65%, rgba(19, 47, 68, 0) 100%);
 }
 
 .topbar {
@@ -45,13 +45,13 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 0.8rem;
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-  background: color-mix(in srgb, #fff 96%, #edf3f7);
+  border: 1px solid color-mix(in srgb, #ffffff 24%, #0f2c40);
+  border-radius: 1.1rem;
+  background: linear-gradient(160deg, #173d56 0%, #11334a 100%);
   position: relative;
   z-index: 41;
   backdrop-filter: blur(10px);
-  box-shadow: 0 18px 34px -30px rgba(17, 34, 48, 0.7);
+  box-shadow: 0 18px 34px -28px rgba(10, 23, 35, 0.62);
 }
 
 .brand {
@@ -77,7 +77,7 @@
 
 .nav-links a {
   text-decoration: none;
-  color: var(--ink-muted);
+  color: #d9e7f1;
   font-size: 0.85rem;
   font-weight: 700;
   border-radius: 999px;
@@ -87,15 +87,15 @@
 }
 
 .nav-links a:hover {
-  border-color: color-mix(in srgb, var(--brand) 22%, var(--line));
-  background: #fff;
-  color: var(--brand-deep);
+  border-color: color-mix(in srgb, #ffffff 32%, #173d56);
+  background: color-mix(in srgb, #ffffff 15%, #173d56);
+  color: #ffffff;
 }
 
 .nav-links a.is-active {
-  color: var(--brand-deep);
-  border-color: color-mix(in srgb, var(--brand) 36%, var(--line));
-  background: color-mix(in srgb, #fff 80%, #e5f2ea);
+  color: #ffffff;
+  border-color: color-mix(in srgb, #ffffff 40%, #173d56);
+  background: color-mix(in srgb, #ffffff 22%, #173d56);
 }
 
 .topbar-cta {
@@ -126,14 +126,14 @@
 }
 
 .call-now {
-  color: #1f221e;
+  color: #1f1d18;
   background: var(--accent);
 }
 
 .email-link {
-  color: var(--brand-deep);
-  background: #fff;
-  border: 1px solid var(--line);
+  color: #e8f0f6;
+  background: color-mix(in srgb, #ffffff 10%, #173d56);
+  border: 1px solid color-mix(in srgb, #ffffff 30%, #173d56);
 }
 
 .content-wrap {
@@ -203,14 +203,12 @@
   }
 
   .nav-links {
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-    padding-bottom: 0.16rem;
-  }
-
-  .nav-links::-webkit-scrollbar {
-    display: none;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.38rem;
+    white-space: normal;
+    padding-bottom: 0;
   }
 
   .content-wrap {
@@ -219,9 +217,11 @@
   }
 
   .nav-links a {
-    padding: 0.58rem 0.84rem;
-    font-size: 0.83rem;
-    min-height: 2.35rem;
+    width: 100%;
+    padding: 0.54rem 0.56rem;
+    font-size: 0.8rem;
+    min-height: 2.2rem;
+    text-align: center;
   }
 
   .topbar-cta {
@@ -240,7 +240,7 @@
     padding: 0.52rem;
     border-radius: 0.86rem;
     border: 1px solid var(--line);
-    background: color-mix(in srgb, #fff 92%, #eef4ed);
+    background: color-mix(in srgb, #fff 92%, #edf3f7);
     box-shadow: 0 14px 24px -20px rgba(22, 41, 31, 0.75);
   }
 
@@ -284,11 +284,12 @@
   }
 
   .nav-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.34rem;
   }
 
   .nav-links a {
-    padding: 0.48rem 0.72rem;
+    padding: 0.5rem 0.62rem;
     font-size: 0.81rem;
   }
 
