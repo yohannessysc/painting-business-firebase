@@ -39,7 +39,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 0.86rem;
   padding: 0.94rem;
-  background: linear-gradient(170deg, #fff 0%, #f7fbf8 100%);
+  background: linear-gradient(170deg, #fff 0%, #f4f8fb 100%);
 }
 
 .step-number {
@@ -63,15 +63,91 @@ h2 {
   max-width: 44ch;
 }
 
+.process-support {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.support-card {
+  border: 1px solid var(--line);
+  border-radius: 0.86rem;
+  padding: 0.94rem;
+  background: linear-gradient(170deg, #fff 0%, #f4f8fb 100%);
+}
+
+.support-card h2 {
+  margin-top: 0.4rem;
+}
+
+.support-card p {
+  margin-top: 0.55rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 44ch;
+}
+
+ul {
+  margin: 0.65rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.38rem;
+}
+
+li {
+  position: relative;
+  padding-left: 1.02rem;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.45rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 78%, #fff);
+}
+
+.support-card--cta {
+  background: linear-gradient(165deg, #eef5fa 0%, #f6f9fc 100%);
+}
+
+.cta-link {
+  margin-top: 0.72rem;
+  display: inline-flex;
+  text-decoration: none;
+  border-radius: 999px;
+  min-height: 2.45rem;
+  padding: 0.58rem 0.9rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--brand-deep);
+}
+
 @media (max-width: 980px) {
   .process-line {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .process-support {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 680px) {
   section {
-    padding: 0.92rem;
+    padding: 0.86rem;
   }
 
   .process-line {
@@ -81,11 +157,11 @@ h2 {
 
 @media (max-width: 430px) {
   section {
-    padding: 0.82rem;
+    padding: 0.76rem;
   }
 
   .process-step {
-    padding: 0.86rem;
+    padding: 0.8rem;
   }
 }
 

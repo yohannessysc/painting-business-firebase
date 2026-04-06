@@ -13,4 +13,23 @@
       </article>
     }
   </div>
+
+  <div class="process-support">
+    <article class="support-card">
+      <p class="eyebrow">Quality Control</p>
+      <h2>What We Verify Before Sign-Off</h2>
+      <ul>
+        @for (item of qualityChecks; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </article>
+
+    <article class="support-card support-card--cta">
+      <p class="eyebrow">Next Step</p>
+      <h2>Ready To Start Your Project Plan?</h2>
+      <p>Tell us your timeline and scope. We will send a clear written quote.</p>
+      <a class="cta-link" routerLink="/contact">Request Your Quote</a>
+    </article>
+  </div>
 </section>

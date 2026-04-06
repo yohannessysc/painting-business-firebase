@@ -53,14 +53,21 @@ h1 {
   grid-template-columns: 1.08fr 0.92fr;
 }
 
-.service-row--reverse img {
+.service-row--reverse .service-media {
   order: 2;
+}
+
+.service-media {
+  width: 100%;
+  min-height: 250px;
+  max-height: 330px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
 }
 
 .service-row img {
   width: 100%;
   height: 100%;
-  min-height: 250px;
   object-fit: cover;
   display: block;
 }
@@ -228,12 +235,14 @@ li::before {
     grid-template-columns: 1fr;
   }
 
-  .service-row--reverse img {
+  .service-row--reverse .service-media {
     order: 0;
   }
 
-  .service-row img {
-    min-height: 230px;
+  .service-media {
+    min-height: 220px;
+    max-height: 280px;
+    aspect-ratio: 16 / 10;
   }
 
   .estimator-form {
@@ -247,25 +256,41 @@ li::before {
 
 @media (max-width: 680px) {
   section {
-    padding: 0.92rem;
+    padding: 0.86rem;
   }
 
   .service-row > div {
-    padding: 0.9rem;
+    padding: 0.82rem;
+  }
+
+  .service-row {
+    border-radius: 0.76rem;
+  }
+
+  .service-media {
+    min-height: 188px;
+    max-height: 240px;
   }
 
   .estimator-form {
     grid-template-columns: 1fr;
   }
+
+  .estimator-form select,
+  .btn-estimate {
+    min-height: 2.9rem;
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 430px) {
   section {
-    padding: 0.82rem;
+    padding: 0.76rem;
   }
 
-  .service-row img {
-    min-height: 205px;
+  .service-media {
+    min-height: 170px;
+    max-height: 210px;
   }
 }
 

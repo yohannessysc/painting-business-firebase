@@ -15,4 +15,19 @@
       </figure>
     }
   </div>
+
+  <div class="proof-strip" aria-label="Project proof points">
+    @for (item of projectProofPoints; track item.label) {
+      <article>
+        <p class="value">{{ item.value }}</p>
+        <p class="label">{{ item.label }}</p>
+      </article>
+    }
+  </div>
+
+  <div class="projects-cta">
+    <h2>Want Similar Results In Your Space?</h2>
+    <p>Share your project details and we will provide a clear scope and quote.</p>
+    <a class="cta-link" routerLink="/contact">Start Your Quote</a>
+  </div>
 </section>

@@ -1,34 +1,74 @@
 <section class="section contact-panel">
   <div class="contact-intro">
     <p class="eyebrow">Contact</p>
-    <h1>Tell Us About Your Project</h1>
-    <p>We respond quickly with a clear scope and a practical timeline.</p>
+    <h1>Get Your Quote Fast</h1>
+    <p>Share a few details and we will respond quickly with next steps.</p>
     <p><strong>Email:</strong> {{ contactEmail }}</p>
     <p><strong>Phone:</strong> {{ contactPhone }}</p>
   </div>
 
-  <form class="quote-form" aria-label="Quote request form" (submit)="submitLead($event)">
+  <form class="quote-form" aria-label="Quote request form" (submit)="submitLead($event)" novalidate>
+    <input type="hidden" name="website" value="" />
     <label>
       Full name
-      <input type="text" name="fullName" placeholder="Jane Doe" required />
+      <input
+        type="text"
+        name="fullName"
+        placeholder="Jane Doe"
+        minlength="2"
+        maxlength="100"
+        autocomplete="name"
+        required
+        (input)="handleFieldInput('fullName')"
+      />
+      @if (getFieldError('fullName')) {
+        <small class="form-field-error">{{ getFieldError('fullName') }}</small>
+      }
     </label>
     <label>
       Email
-      <input type="email" name="email" placeholder="jane@email.com" required />
+      <input
+        type="email"
+        name="email"
+        placeholder="jane@email.com"
+        maxlength="254"
+        autocomplete="email"
+        required
+        (input)="handleFieldInput('email')"
+      />
+      @if (getFieldError('email')) {
+        <small class="form-field-error">{{ getFieldError('email') }}</small>
+      }
     </label>
     <label>
       Phone
-      <input type="tel" name="phone" placeholder="(000) 000-0000" required />
+      <input
+        type="tel"
+        name="phone"
+        placeholder="(000) 000-0000"
+        maxlength="25"
+        inputmode="tel"
+        autocomplete="tel"
+        pattern="[+()\-\s0-9.]{7,25}"
+        required
+        (input)="handleFieldInput('phone')"
+      />
+      @if (getFieldError('phone')) {
+        <small class="form-field-error">{{ getFieldError('phone') }}</small>
+      }
     </label>
     <label>
       Service needed
-      <select name="serviceType" required>
+      <select name="serviceType" required (change)="handleFieldInput('serviceType')">
         <option value="">Select a service</option>
         <option value="Interior Painting">Interior Painting</option>
         <option value="Exterior Painting">Exterior Painting</option>
         <option value="Cabinet Refinishing">Cabinet Refinishing</option>
         <option value="Commercial Spaces">Commercial Spaces</option>
       </select>
+      @if (getFieldError('serviceType')) {
+        <small class="form-field-error">{{ getFieldError('serviceType') }}</small>
+      }
     </label>
     <label>
       Consultation type
@@ -37,28 +77,59 @@
         <option value="Virtual Consultation">Virtual Consultation</option>
         <option value="Phone Planning Call">Phone Planning Call</option>
       </select>
+      @if (getFieldError('consultationType')) {
+        <small class="form-field-error">{{ getFieldError('consultationType') }}</small>
+      }
     </label>
     <div class="booking-grid">
-      <label>
+      <label class="booking-field">
         Preferred date
-        <input type="date" name="preferredDate" [min]="minBookingDate" (change)="handlePreferredDateChange($event)" />
+        <input
+          type="date"
+          name="preferredDate"
+          [min]="minBookingDate"
+          required
+          (change)="handlePreferredDateChange($event)"
+        />
+        @if (getFieldError('preferredDate')) {
+          <small class="booking-helper form-field-error">{{ getFieldError('preferredDate') }}</small>
+        } @else {
+          <small class="booking-helper" aria-hidden="true">&nbsp;</small>
+        }
       </label>
-      <label>
+      <label class="booking-field">
         Preferred time slot
-        <select name="preferredTimeSlot" required>
+        <select
+          name="preferredTimeSlot"
+          required
+          (change)="handlePreferredTimeSlotChange($event)"
+          [disabled]="isLoadingSlots || isTimeSlotSelectDimmed()"
+          [class.slot-select--dimmed]="isTimeSlotSelectDimmed()"
+        >
           <option value="">Select a slot</option>
           @for (slot of availableTimeSlots; track slot) {
-            <option [value]="slot">{{ slot }}</option>
+            <option [value]="slot" [disabled]="isTimeSlotDisabled(slot)">{{ slot }}</option>
           }
         </select>
-        @if (isLoadingSlots) {
-          <small>Checking current availability...</small>
+        @if (bookingHelperMessage) {
+          <small class="booking-helper">{{ bookingHelperMessage }}</small>
+        } @else {
+          <small class="booking-helper" aria-hidden="true">&nbsp;</small>
         }
       </label>
     </div>
     <label>
       Project details
-      <textarea rows="4" name="message" placeholder="Scope, area size, and preferred timing"></textarea>
+      <textarea
+        rows="4"
+        name="message"
+        maxlength="1500"
+        placeholder="Scope, area size, and preferred timing"
+          (input)="handleFieldInput('message')"
+      ></textarea>
+      @if (getFieldError('message')) {
+        <small class="form-field-error">{{ getFieldError('message') }}</small>
+      }
     </label>
     @if (leadSuccessMessage) {
       <p class="form-feedback form-feedback--success">{{ leadSuccessMessage }}</p>
@@ -66,6 +137,9 @@
     @if (leadErrorMessage) {
       <p class="form-feedback form-feedback--error">{{ leadErrorMessage }}</p>
     }
+    <p class="form-feedback">
+      By submitting this form, you agree we may contact you by phone or email about your quote request.
+    </p>
     <button type="submit" class="btn btn-primary" [disabled]="isSubmittingLead">
       {{ isSubmittingLead ? 'Submitting...' : 'Send Request' }}
     </button>
@@ -75,8 +149,8 @@
 <section class="section support-panel">
   <article class="support-block">
     <p class="eyebrow">Areas We Serve</p>
-    <h2>Serving Ottawa And Nearby Neighborhoods</h2>
-    <p>Not sure if we service your area? Send your postal code and we will confirm quickly.</p>
+    <h2>Serving Ottawa And Nearby Areas</h2>
+    <p>Send your postal code if you are unsure. We will confirm coverage fast.</p>
     <div class="area-chips" aria-label="Service areas">
       @for (area of serviceAreas; track area) {
         <span>{{ area }}</span>
@@ -85,13 +159,13 @@
   </article>
 
   <article class="support-block">
-    <p class="eyebrow">What To Expect</p>
-    <h2>Flexible Consultation Options</h2>
+    <p class="eyebrow">Consultation</p>
+    <h2>Choose The Method That Fits You</h2>
     <ul>
       @for (mode of consultationModes; track mode) {
         <li>{{ mode }}</li>
       }
     </ul>
-    <p class="support-note">Typical response time: within 48 hours for complete quote requests.</p>
+    <p class="support-note">Typical response time: within 48 hours.</p>
   </article>
 </section>

@@ -58,6 +58,43 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.62rem;
+  align-items: start;
+}
+
+.booking-grid > label {
+  align-self: start;
+}
+
+.booking-field {
+  display: grid;
+  grid-template-rows: auto 2.75rem 1.05rem;
+  gap: 0.35rem;
+}
+
+.booking-helper {
+  display: block;
+  min-height: 1.05rem;
+  line-height: 1.2;
+}
+
+.booking-field > input,
+.booking-field > select {
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+}
+
+.slot-select--dimmed {
+  opacity: 0.56;
+  filter: saturate(0.4);
+}
+
+input[type='date'] {
+  line-height: 1.2;
+}
+
+input[type='date']::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 .booking-grid small {
@@ -72,8 +109,13 @@ h1 {
   border: 1px solid color-mix(in srgb, var(--brand) 16%, #cfdad4);
   border-radius: 0.65rem;
   padding: 0.64rem 0.72rem;
+  min-height: 2.75rem;
   font: inherit;
   background: #fff;
+}
+
+.quote-form option:disabled {
+  color: #98a3af;
 }
 
 .quote-form input:focus,
@@ -110,6 +152,13 @@ h1 {
 .form-feedback {
   margin: 0;
   font-size: 0.9rem;
+}
+
+.form-field-error {
+  color: #b83232;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  margin-top: 0.05rem;
 }
 
 .form-feedback--success {
@@ -207,25 +256,40 @@ h2 {
 
 @media (max-width: 680px) {
   section {
-    padding: 0.92rem;
+    padding: 0.86rem;
   }
 
   .quote-form {
-    padding: 0.82rem;
+    padding: 0.76rem;
+  }
+
+  .quote-form input,
+  .quote-form textarea,
+  .quote-form select {
+    min-height: 3rem;
+    font-size: 16px;
+  }
+
+  .booking-field {
+    grid-template-rows: auto 3rem 1.05rem;
   }
 
   .booking-grid {
     grid-template-columns: 1fr;
   }
+
+  .support-block {
+    padding: 0.8rem;
+  }
 }
 
 @media (max-width: 430px) {
   section {
-    padding: 0.82rem;
+    padding: 0.76rem;
   }
 
   .quote-form {
-    padding: 0.74rem;
+    padding: 0.68rem;
   }
 
   .quote-form label {

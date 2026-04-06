@@ -341,13 +341,34 @@ h3 {
 
 @media (max-width: 680px) {
   section {
-    padding: 0.92rem;
+    padding: 0.86rem;
   }
 
   .hero,
   .hero-image {
-    min-height: 300px;
-    max-height: 340px;
+    min-height: 286px;
+    max-height: 320px;
+  }
+
+  .hero-overlay {
+    padding: 0.9rem;
+    gap: 0.6rem;
+  }
+
+  .trust-strip {
+    margin-top: 0.76rem;
+    gap: 0.58rem;
+  }
+
+  .trust-strip article {
+    padding: 0.72rem;
+  }
+
+  .priorities,
+  .service-teaser,
+  .quote-process,
+  .home-cta {
+    margin-top: 0.76rem;
   }
 
   h1 {
@@ -366,13 +387,13 @@ h3 {
 
 @media (max-width: 430px) {
   section {
-    padding: 0.82rem;
+    padding: 0.76rem;
   }
 
   .hero,
   .hero-image {
-    min-height: 280px;
-    max-height: 320px;
+    min-height: 268px;
+    max-height: 300px;
   }
 
   .hero-overlay {
@@ -381,7 +402,7 @@ h3 {
   }
 
   .value {
-    font-size: 1.18rem;
+    font-size: 1.1rem;
   }
 
   .label {
@@ -392,8 +413,8 @@ h3 {
 @media (max-width: 390px) {
   .hero,
   .hero-image {
-    min-height: 270px;
-    max-height: 300px;
+    min-height: 248px;
+    max-height: 280px;
   }
 
   h1 {

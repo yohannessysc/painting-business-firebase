@@ -15,36 +15,13 @@ export class ServicesPage {
   protected isEstimating = false;
 
   protected readonly includedScope = [
-    'Surface prep: patching, sanding, and masking before painting',
-    'Furniture/floor protection and daily cleanup on active work areas',
-    'Professional-grade materials selected for durability and finish consistency',
-    'Final walkthrough with touch-up corrections before closeout'
+    'Prep, masking, and clean cut lines',
+    'Daily cleanup and final touch-ups'
   ];
 
-  protected readonly excludedScope = [
-    'Major structural repairs and mold remediation work',
-    'Electrical, plumbing, or HVAC adjustments',
-    'Custom millwork fabrication or drywall replacement at scale',
-    'Permit handling where municipal approvals are required'
-  ];
-
-  protected readonly serviceFaqs = [
-    {
-      question: 'How quickly can we start after I request a quote?',
-      answer: 'Most quote requests receive an initial response within 48 hours. Start dates depend on scope, weather, and materials.'
-    },
-    {
-      question: 'Do you offer both in-person and virtual estimates?',
-      answer: 'Yes. You can choose in-person consultation, virtual walkthrough, or a phone planning call based on project complexity.'
-    },
-    {
-      question: 'What happens if we find additional prep work during the job?',
-      answer: 'We pause and explain findings with updated scope and pricing before proceeding, so there are no surprise additions.'
-    },
-    {
-      question: 'Are products and finish options discussed before work starts?',
-      answer: 'Yes. We confirm coating systems, sheen options, and expected maintenance so the finish matches your goals.'
-    }
+  protected readonly addOnScope = [
+    'Major repairs and specialty restoration',
+    'Permit-related or trade-specific work'
   ];
 
   protected handleImageError(event: Event): void {

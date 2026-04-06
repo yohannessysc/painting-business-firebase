@@ -8,10 +8,9 @@
   />
   <div class="hero-overlay">
     <p class="eyebrow">Licensed | Insured | Detail-Focused</p>
-    <h1>Real Craftsmanship For Homes And Businesses That Need It Done Right.</h1>
+    <h1>Premium Painting. Clean Process. Reliable Results.</h1>
     <p>
-      <strong>{{ companyName }}</strong> delivers prep-first painting with clean job sites, clear
-      timelines, and finishes that hold up over time.
+      <strong>{{ companyName }}</strong> helps homes and businesses look sharp without the usual project stress.
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary" routerLink="/contact">Request Free Quote</a>
@@ -54,7 +53,6 @@
       <article>
         <h3>{{ item.title }}</h3>
         <p>{{ item.description }}</p>
-        <a class="teaser-link" [routerLink]="item.route">Get A Quote</a>
       </article>
     }
   </div>
@@ -76,42 +74,10 @@
   </div>
 </section>
 
-<section class="startup-message">
-  <div>
-    <p class="eyebrow eyebrow-dark">Startup Transparency</p>
-    <h2>We Are New, So Every Project Gets Full Attention</h2>
-    <p>
-      As a startup team, our reputation depends on each result. That means careful prep, frequent
-      communication, and no rushed closeout.
-    </p>
-  </div>
-  <ul>
-    @for (point of startupPromise; track point) {
-      <li>{{ point }}</li>
-    }
-  </ul>
-</section>
-
-<section class="consultation-paths" aria-label="Consultation options">
-  <div class="section-head">
-    <p class="eyebrow eyebrow-dark">Choose Your Quote Method</p>
-    <h2>Pick The Consultation Style That Fits Your Schedule</h2>
-  </div>
-  <div class="consultation-grid">
-    @for (item of consultationOptions; track item.title) {
-      <article>
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.description }}</p>
-        <a class="teaser-link" routerLink="/contact">{{ item.cta }}</a>
-      </article>
-    }
-  </div>
-</section>
-
 <section class="home-cta">
   <h2>Ready For A Fresh, Professional Finish?</h2>
-  <p>Tell us your scope and timing, and we will send a clear quote with practical next steps.</p>
-  <p class="micro-note">No account setup. No captcha friction. Just a direct response from our team.</p>
+  <p>Tell us the scope and timing. We will send a clear quote fast.</p>
+  <p class="micro-note">No account setup. No friction. Direct response from our team.</p>
   <div class="hero-actions">
     <a class="btn btn-primary" routerLink="/contact">Start Your Quote</a>
     <a class="btn btn-secondary" routerLink="/projects">View Project Results</a>

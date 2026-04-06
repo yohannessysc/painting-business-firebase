@@ -1,6 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { contactEmail, contactPhone, serviceAreas } from '../site-content';
 
+type LeadFormField =
+  | 'fullName'
+  | 'email'
+  | 'phone'
+  | 'serviceType'
+  | 'consultationType'
+  | 'preferredDate'
+  | 'preferredTimeSlot'
+  | 'message';
+
 @Component({
   selector: 'app-contact-page',
   imports: [],
@@ -8,10 +18,17 @@ import { contactEmail, contactPhone, serviceAreas } from '../site-content';
   styleUrl: './contact.page.scss'
 })
 export class ContactPage implements OnInit {
+  private static readonly maxLengths = {
+    fullName: 100,
+    email: 254,
+    phone: 25,
+    message: 1500
+  } as const;
+
   protected readonly contactEmail = contactEmail;
   protected readonly contactPhone = contactPhone;
   protected readonly serviceAreas = serviceAreas;
-  protected readonly minBookingDate = new Date().toISOString().split('T')[0];
+  protected readonly minBookingDate = ContactPage.toUtcIsoDate(new Date());
   protected readonly consultationModes = [
     'On-site estimate for larger projects',
     'Virtual quote based on photos/video',
@@ -21,6 +38,7 @@ export class ContactPage implements OnInit {
   protected isLoadingSlots = false;
   protected selectedConsultationType = 'In-Person Consultation';
   protected selectedPreferredDate = '';
+  protected selectedPreferredTimeSlot = '';
   protected availableTimeSlots: string[] = [
     '8:00 AM - 10:00 AM',
     '10:00 AM - 12:00 PM',
@@ -30,6 +48,7 @@ export class ContactPage implements OnInit {
   ];
   protected leadSuccessMessage = '';
   protected leadErrorMessage = '';
+  protected fieldErrors: Partial<Record<LeadFormField, string>> = {};
 
   async ngOnInit(): Promise<void> {
     await this.loadAvailableTimeSlots();
@@ -38,13 +57,65 @@ export class ContactPage implements OnInit {
   protected async handleConsultationTypeChange(event: Event): Promise<void> {
     const element = event.target as HTMLSelectElement | null;
     this.selectedConsultationType = element?.value || 'In-Person Consultation';
+    this.clearFieldError('consultationType');
     await this.loadAvailableTimeSlots();
   }
 
   protected async handlePreferredDateChange(event: Event): Promise<void> {
     const element = event.target as HTMLInputElement | null;
     this.selectedPreferredDate = element?.value || '';
+    this.clearFieldError('preferredDate');
     await this.loadAvailableTimeSlots();
+  }
+
+  protected handlePreferredTimeSlotChange(event: Event): void {
+    const element = event.target as HTMLSelectElement | null;
+    this.selectedPreferredTimeSlot = element?.value || '';
+    this.clearFieldError('preferredTimeSlot');
+  }
+
+  protected handleFieldInput(field: LeadFormField): void {
+    this.clearFieldError(field);
+  }
+
+  protected get bookingHelperMessage(): string {
+    if (this.isLoadingSlots) {
+      return 'Checking current availability...';
+    }
+
+    if (!this.selectedPreferredDate) {
+      return '';
+    }
+
+    if (this.selectedPreferredDate < this.minBookingDate) {
+      return 'Selected date is in the past. Please choose a valid date.';
+    }
+
+    if (this.availableTimeSlots.length === 0) {
+      return 'No time slots available for this date. Please choose another date.';
+    }
+
+    if (this.selectedPreferredDate === this.minBookingDate) {
+      return 'Past times are disabled automatically.';
+    }
+
+    return '';
+  }
+
+  protected isTimeSlotSelectDimmed(): boolean {
+    if (!this.selectedPreferredDate) {
+      return false;
+    }
+
+    return this.selectedPreferredDate < this.minBookingDate || this.availableTimeSlots.length === 0;
+  }
+
+  protected isTimeSlotDisabled(slot: string): boolean {
+    return !this.availableTimeSlots.includes(slot);
+  }
+
+  protected getFieldError(field: LeadFormField): string {
+    return this.fieldErrors[field] ?? '';
   }
 
   protected async submitLead(event: Event): Promise<void> {
@@ -61,16 +132,111 @@ export class ContactPage implements OnInit {
     const preferredDate = String(formData.get('preferredDate') ?? '').trim();
     const preferredTimeSlot = String(formData.get('preferredTimeSlot') ?? '').trim();
     const message = String(formData.get('message') ?? '').trim();
+    const website = String(formData.get('website') ?? '').trim();
 
-    if (!fullName || !email || !phone || !serviceType || !consultationType || !preferredTimeSlot) {
-      this.leadErrorMessage = 'Please fill in all required fields.';
-      this.leadSuccessMessage = '';
+    this.selectedPreferredDate = preferredDate;
+    this.selectedPreferredTimeSlot = preferredTimeSlot;
+
+    this.fieldErrors = {};
+    this.leadErrorMessage = '';
+    this.leadSuccessMessage = '';
+
+    let hasErrors = false;
+
+    if (!fullName) {
+      this.setFieldError('fullName', 'Full name is required.');
+      hasErrors = true;
+    }
+
+    if (!email) {
+      this.setFieldError('email', 'Email is required.');
+      hasErrors = true;
+    }
+
+    if (!phone) {
+      this.setFieldError('phone', 'Phone number is required.');
+      hasErrors = true;
+    }
+
+    if (!serviceType) {
+      this.setFieldError('serviceType', 'Please select a service.');
+      hasErrors = true;
+    }
+
+    if (!consultationType) {
+      this.setFieldError('consultationType', 'Please choose a consultation type.');
+      hasErrors = true;
+    }
+
+    if (!preferredDate) {
+      this.setFieldError('preferredDate', 'Preferred date is required.');
+      hasErrors = true;
+    }
+
+    if (!preferredTimeSlot) {
+      this.setFieldError('preferredTimeSlot', 'Preferred time slot is required.');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      return;
+    }
+
+    if (fullName.length < 2 || fullName.length > ContactPage.maxLengths.fullName) {
+      this.setFieldError('fullName', 'Please enter a valid full name (2-100 characters).');
+      hasErrors = true;
+    }
+
+    if (email.length > ContactPage.maxLengths.email || !this.isValidEmail(email)) {
+      this.setFieldError('email', 'Please enter a valid email address.');
+      hasErrors = true;
+    }
+
+    if (phone.length > ContactPage.maxLengths.phone || !this.isValidPhone(phone)) {
+      this.setFieldError('phone', 'Please enter a valid phone number.');
+      hasErrors = true;
+    }
+
+    if (message.length > ContactPage.maxLengths.message) {
+      this.setFieldError('message', 'Project details are too long (maximum 1500 characters).');
+      hasErrors = true;
+    }
+
+    if (this.hasDisallowedControlChars(fullName)) {
+      this.setFieldError('fullName', 'This field contains invalid characters.');
+      hasErrors = true;
+    }
+
+    if (this.hasDisallowedControlChars(email)) {
+      this.setFieldError('email', 'This field contains invalid characters.');
+      hasErrors = true;
+    }
+
+    if (this.hasDisallowedControlChars(phone)) {
+      this.setFieldError('phone', 'This field contains invalid characters.');
+      hasErrors = true;
+    }
+
+    if (this.hasDisallowedControlChars(message)) {
+      this.setFieldError('message', 'This field contains invalid characters.');
+      hasErrors = true;
+    }
+
+    if (preferredDate < this.minBookingDate) {
+      this.setFieldError('preferredDate', 'Please choose today or a future date.');
+      hasErrors = true;
+    }
+
+    if (this.isTimeSlotDisabled(preferredTimeSlot)) {
+      this.setFieldError('preferredTimeSlot', 'Selected time slot is no longer available.');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
       return;
     }
 
     this.isSubmittingLead = true;
-    this.leadErrorMessage = '';
-    this.leadSuccessMessage = '';
 
     try {
       const response = await fetch('/api/leads', {
@@ -86,6 +252,7 @@ export class ContactPage implements OnInit {
         consultationType,
         preferredDate,
         preferredTimeSlot,
+          website,
           message
         })
       });
@@ -95,6 +262,9 @@ export class ContactPage implements OnInit {
       }
 
       form.reset();
+      this.selectedPreferredDate = '';
+      this.selectedPreferredTimeSlot = '';
+      this.fieldErrors = {};
       this.leadSuccessMessage = 'Thanks. Your quote request was sent successfully.';
     } catch {
       this.leadErrorMessage = 'Unable to submit right now. Please try again shortly.';
@@ -105,6 +275,9 @@ export class ContactPage implements OnInit {
 
   private async loadAvailableTimeSlots(): Promise<void> {
     this.isLoadingSlots = true;
+
+    // Clear stale options while loading so unavailable dates don't show old slots.
+    this.availableTimeSlots = [];
 
     try {
       const params = new URLSearchParams({
@@ -121,8 +294,12 @@ export class ContactPage implements OnInit {
       }
 
       const data = (await response.json()) as { slots?: string[] };
-      if (Array.isArray(data.slots) && data.slots.length > 0) {
+      if (Array.isArray(data.slots)) {
         this.availableTimeSlots = data.slots;
+      }
+
+      if (this.selectedPreferredTimeSlot && !this.availableTimeSlots.includes(this.selectedPreferredTimeSlot)) {
+        this.selectedPreferredTimeSlot = '';
       }
     } catch {
       // Keep fallback slots to avoid blocking user submission.
@@ -133,8 +310,48 @@ export class ContactPage implements OnInit {
         '2:00 PM - 4:00 PM',
         '4:00 PM - 6:00 PM'
       ];
+
+      if (this.selectedPreferredTimeSlot && !this.availableTimeSlots.includes(this.selectedPreferredTimeSlot)) {
+        this.selectedPreferredTimeSlot = '';
+      }
     } finally {
       this.isLoadingSlots = false;
     }
+  }
+
+  private static toUtcIsoDate(date: Date): string {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  private isValidPhone(phone: string): boolean {
+    if (!/^[+()\-\s0-9.]+$/.test(phone)) {
+      return false;
+    }
+
+    const digitCount = phone.replace(/\D/g, '').length;
+    return digitCount >= 7 && digitCount <= 15;
+  }
+
+  private hasDisallowedControlChars(input: string): boolean {
+    return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(input);
+  }
+
+  private setFieldError(field: LeadFormField, message: string): void {
+    this.fieldErrors[field] = message;
+  }
+
+  private clearFieldError(field: LeadFormField): void {
+    if (!this.fieldErrors[field]) {
+      return;
+    }
+
+    this.fieldErrors[field] = '';
   }
 }

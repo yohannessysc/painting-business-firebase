@@ -31,13 +31,13 @@ export const serviceAreas = [
   'Barrhaven',
   'Kanata',
   'Nepean',
-  'Orleans',
+  'Orleans (Orleans East)',
   'Gloucester',
   'Downtown Ottawa'
 ];
 
 export const trustHighlights: TrustHighlight[] = [
-  { value: 'New Team', label: 'Startup with owner-led quality control' },
+  { value: 'Owner-Led', label: 'Every project checked directly by the owner' },
   { value: '48h', label: 'Typical quote response window' },
   { value: 'Clean Site', label: 'Protected floors and daily cleanup' },
   { value: 'Clear Scope', label: 'Written plan before day one' }
@@ -48,8 +48,7 @@ export const services: ServiceItem[] = [
     title: 'Interior Painting',
     description:
       'Full-room and targeted interior repainting with patching, sanding, priming, and clean cut-lines.',
-    imageUrl:
-      'https://images.pexels.com/photos/5493662/pexels-photo-5493662.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    imageUrl: '/images/stock/service-interior.jpg',
     imageAlt: 'Professional painters applying interior wall paint with rollers',
     highlights: ['Drywall patch and surface prep', 'Clean edges on trim and ceilings', 'Low-odor options for occupied homes']
   },
@@ -57,8 +56,7 @@ export const services: ServiceItem[] = [
     title: 'Exterior Painting',
     description:
       'Exterior coatings for siding, stucco, trim, and doors with weather-smart preparation and finish systems.',
-    imageUrl:
-      'https://images.pexels.com/photos/5493664/pexels-photo-5493664.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    imageUrl: '/images/stock/service-exterior.jpg',
     imageAlt: 'Exterior prep and painting activity on a house facade',
     highlights: ['Wash, scrape, and prime sequence', 'Detailed caulking and crack fill', 'UV and moisture-resistant top coats']
   },
@@ -66,8 +64,7 @@ export const services: ServiceItem[] = [
     title: 'Cabinet Refinishing',
     description:
       'Kitchen and built-in cabinet repainting that delivers a durable, smooth finish without full replacement costs.',
-    imageUrl:
-      'https://images.pexels.com/photos/6474135/pexels-photo-6474135.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    imageUrl: '/images/stock/service-cabinet.jpg',
     imageAlt: 'Painter working carefully on detailed surface refinishing',
     highlights: ['Degrease, sand, and bond-prime', 'Spray and brush combination by surface', 'Hardware-safe masking and reassembly']
   },
@@ -75,8 +72,7 @@ export const services: ServiceItem[] = [
     title: 'Commercial Spaces',
     description:
       'Office, retail, and rental-unit painting delivered in phases to keep operations moving with minimal downtime.',
-    imageUrl:
-      'https://images.pexels.com/photos/36153946/pexels-photo-36153946.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    imageUrl: '/images/stock/service-commercial.jpg',
     imageAlt: 'Commercial painting team working on an interior renovation site',
     highlights: ['After-hours and staged scheduling', 'Clear daily completion targets', 'Site protection and cleanup protocol']
   }
@@ -109,22 +105,19 @@ export const results: ResultItem[] = [
   {
     title: 'Exterior Refresh',
     description: 'Complete exterior prep and finish pass for stronger curb appeal and long-term protection.',
-    imageUrl:
-      'https://images.pexels.com/photos/5493669/pexels-photo-5493669.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    imageUrl: '/images/stock/project-exterior-refresh.jpg',
     imageAlt: 'Professional house painter rolling paint on exterior wall'
   },
   {
     title: 'Interior Repaint',
     description: 'A full interior repaint with cleaner light reflection and uniform color consistency.',
-    imageUrl:
-      'https://images.pexels.com/photos/7218683/pexels-photo-7218683.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    imageUrl: '/images/stock/project-interior-repaint.jpg',
     imageAlt: 'Painter rolling new paint onto an interior wall'
   },
   {
     title: 'Precision Finishing',
     description: 'Detail work and finish corrections completed with meticulous masking and clean execution.',
-    imageUrl:
-      'https://images.pexels.com/photos/6474301/pexels-photo-6474301.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    imageUrl: '/images/stock/project-precision-finishing.jpg',
     imageAlt: 'Painter performing detail-focused finishing work indoors'
   }
 ];

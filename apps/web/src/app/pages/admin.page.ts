@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Meta } from '@angular/platform-browser';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getClientFirebaseApp } from '../utils/firebase-client';
 
@@ -45,6 +46,10 @@ export class AdminPage {
   protected isLoadingLeads = false;
   protected leadsError = '';
   protected updatingLeadId = '';
+
+  constructor(private readonly meta: Meta) {
+    this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow, noarchive' });
+  }
 
   protected async login(): Promise<void> {
     this.isLoadingAuth = true;

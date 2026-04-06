@@ -1,12 +1,14 @@
 <section class="section">
   <div class="section-header">
     <p class="eyebrow">What We Do</p>
-    <h1>Services Built Around Real Painting Workflows</h1>
+    <h1>Professional Painting Services</h1>
   </div>
   <div class="services-stack">
     @for (service of services; track service.title; let i = $index) {
       <article class="service-row" [class.service-row--reverse]="i % 2 === 1">
-        <img [src]="service.imageUrl" [alt]="service.imageAlt" loading="lazy" (error)="handleImageError($event)" />
+        <div class="service-media">
+          <img [src]="service.imageUrl" [alt]="service.imageAlt" loading="lazy" (error)="handleImageError($event)" />
+        </div>
         <div>
           <h2>{{ service.title }}</h2>
           <p>{{ service.description }}</p>
@@ -66,8 +68,8 @@
 
 <section class="section scope-panel">
   <article>
-    <p class="eyebrow">What Is Included</p>
-    <h2>Standard Scope On Most Projects</h2>
+    <p class="eyebrow">Included</p>
+    <h2>What You Get</h2>
     <ul>
       @for (item of includedScope; track item) {
         <li>{{ item }}</li>
@@ -75,27 +77,12 @@
     </ul>
   </article>
   <article>
-    <p class="eyebrow">Not Typically Included</p>
-    <h2>Handled As Separate Scope</h2>
+    <p class="eyebrow">Separate Scope</p>
+    <h2>Handled As Add-Ons</h2>
     <ul>
-      @for (item of excludedScope; track item) {
+      @for (item of addOnScope; track item) {
         <li>{{ item }}</li>
       }
     </ul>
   </article>
-</section>
-
-<section class="section faq-panel">
-  <div class="section-header">
-    <p class="eyebrow">Frequently Asked Questions</p>
-    <h2>Answers Before You Book</h2>
-  </div>
-  <div class="faq-list">
-    @for (faq of serviceFaqs; track faq.question) {
-      <details>
-        <summary>{{ faq.question }}</summary>
-        <p>{{ faq.answer }}</p>
-      </details>
-    }
-  </div>
 </section>
