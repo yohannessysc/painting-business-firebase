@@ -59,7 +59,7 @@
     </label>
     <label>
       Service needed
-      <select name="serviceType" required (change)="handleFieldInput('serviceType')">
+      <select name="serviceType" required (change)="handleServiceTypeChange($event)">
         <option value="">Select a service</option>
         <option value="Interior Painting">Interior Painting</option>
         <option value="Exterior Painting">Exterior Painting</option>
@@ -73,6 +73,50 @@
         <small class="form-field-error">{{ getFieldError('serviceType') }}</small>
       }
     </label>
+    @if (isCleaningServiceSelected()) {
+      <div class="cleaning-detail-grid">
+        <label>
+          Property type
+          <select name="cleaningPropertyType" (change)="handleFieldInput('cleaningPropertyType')">
+            <option value="">Select property type</option>
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+          @if (getFieldError('cleaningPropertyType')) {
+            <small class="form-field-error">{{ getFieldError('cleaningPropertyType') }}</small>
+          }
+        </label>
+        <label>
+          Approx square footage
+          <input
+            type="number"
+            name="cleaningSquareFootage"
+            min="100"
+            max="200000"
+            step="1"
+            placeholder="e.g. 1800"
+            inputmode="numeric"
+            (input)="handleFieldInput('cleaningSquareFootage')"
+          />
+          @if (getFieldError('cleaningSquareFootage')) {
+            <small class="form-field-error">{{ getFieldError('cleaningSquareFootage') }}</small>
+          }
+        </label>
+        <label>
+          Cleaning frequency
+          <select name="cleaningFrequency" (change)="handleFieldInput('cleaningFrequency')">
+            <option value="">Select frequency</option>
+            <option value="One-Time">One-Time</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Bi-Weekly">Bi-Weekly</option>
+            <option value="Monthly">Monthly</option>
+          </select>
+          @if (getFieldError('cleaningFrequency')) {
+            <small class="form-field-error">{{ getFieldError('cleaningFrequency') }}</small>
+          }
+        </label>
+      </div>
+    }
     <label>
       Consultation type
       <select name="consultationType" required (change)="handleConsultationTypeChange($event)">

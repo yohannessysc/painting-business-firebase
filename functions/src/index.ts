@@ -33,6 +33,9 @@ const allowedConsultationTypes = [
   "Phone Planning Call",
 ] as const;
 
+const allowedCleaningPropertyTypes = ["Residential", "Commercial"] as const;
+const allowedCleaningFrequencies = ["One-Time", "Weekly", "Bi-Weekly", "Monthly"] as const;
+
 const daytimeSlots = [
   "8:00 AM - 10:00 AM",
   "10:00 AM - 12:00 PM",
@@ -346,6 +349,9 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     email,
     phone,
     serviceType,
+    cleaningPropertyType,
+    cleaningSquareFootage,
+    cleaningFrequency,
     consultationType,
     preferredDate,
     preferredTimeSlot,
@@ -357,11 +363,15 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
   const normalizedEmail = String(email ?? "").trim().toLowerCase();
   const normalizedPhone = String(phone ?? "").trim();
   const normalizedServiceType = String(serviceType ?? "").trim();
+  const normalizedCleaningPropertyType = String(cleaningPropertyType ?? "").trim();
+  const normalizedCleaningSquareFootage = String(cleaningSquareFootage ?? "").trim();
+  const normalizedCleaningFrequency = String(cleaningFrequency ?? "").trim();
   const normalizedConsultationType = String(consultationType ?? "").trim();
   const normalizedPreferredDate = String(preferredDate ?? "").trim();
   const normalizedPreferredTimeSlot = String(preferredTimeSlot ?? "").trim();
   const normalizedMessage = String(message ?? "").trim();
   const normalizedWebsite = String(website ?? "").trim();
+  const isCleaningLead = ["Residential Cleaning", "Commercial Cleaning", "Painting + Cleaning"].includes(normalizedServiceType);
 
   if (normalizedWebsite) {
     res.status(202).json({ ok: true });
@@ -404,6 +414,38 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     return;
   }
 
+  let parsedCleaningSquareFootage = 0;
+  if (isCleaningLead) {
+    if (
+      !allowedCleaningPropertyTypes.includes(
+        normalizedCleaningPropertyType as (typeof allowedCleaningPropertyTypes)[number],
+      )
+    ) {
+      res.status(400).json({ error: "Unsupported cleaning property type" });
+      return;
+    }
+
+    if (
+      !allowedCleaningFrequencies.includes(
+        normalizedCleaningFrequency as (typeof allowedCleaningFrequencies)[number],
+      )
+    ) {
+      res.status(400).json({ error: "Unsupported cleaning frequency" });
+      return;
+    }
+
+    if (!/^\d+$/.test(normalizedCleaningSquareFootage)) {
+      res.status(400).json({ error: "Invalid cleaning square footage" });
+      return;
+    }
+
+    parsedCleaningSquareFootage = Number.parseInt(normalizedCleaningSquareFootage, 10);
+    if (parsedCleaningSquareFootage < 100 || parsedCleaningSquareFootage > 200000) {
+      res.status(400).json({ error: "Cleaning square footage out of range" });
+      return;
+    }
+  }
+
   if (!allowedConsultationTypes.includes(normalizedConsultationType as (typeof allowedConsultationTypes)[number])) {
     res.status(400).json({ error: "Unsupported consultation type" });
     return;
@@ -434,7 +476,9 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     hasDisallowedControlChars(normalizedFullName) ||
     hasDisallowedControlChars(normalizedEmail) ||
     hasDisallowedControlChars(normalizedPhone) ||
-    hasDisallowedControlChars(normalizedMessage)
+    hasDisallowedControlChars(normalizedMessage) ||
+    hasDisallowedControlChars(normalizedCleaningPropertyType) ||
+    hasDisallowedControlChars(normalizedCleaningFrequency)
   ) {
     res.status(400).json({ error: "Lead fields contain invalid characters" });
     return;
@@ -446,6 +490,15 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     email: normalizedEmail,
     phone: normalizedPhone,
     serviceType: normalizedServiceType,
+    ...(isCleaningLead
+      ? {
+          cleaningDetails: {
+            propertyType: normalizedCleaningPropertyType as (typeof allowedCleaningPropertyTypes)[number],
+            squareFootage: parsedCleaningSquareFootage,
+            frequency: normalizedCleaningFrequency as (typeof allowedCleaningFrequencies)[number],
+          },
+        }
+      : {}),
     consultationType: normalizedConsultationType,
     preferredDate: normalizedPreferredDate,
     preferredTimeSlot: normalizedPreferredTimeSlot,

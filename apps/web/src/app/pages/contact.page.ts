@@ -6,6 +6,9 @@ type LeadFormField =
   | 'email'
   | 'phone'
   | 'serviceType'
+  | 'cleaningPropertyType'
+  | 'cleaningSquareFootage'
+  | 'cleaningFrequency'
   | 'consultationType'
   | 'preferredDate'
   | 'preferredTimeSlot'
@@ -34,8 +37,11 @@ export class ContactPage implements OnInit {
     'Virtual quote based on photos/video',
     'Phone-first scope planning'
   ];
+  protected readonly cleaningPropertyTypes = ['Residential', 'Commercial'];
+  protected readonly cleaningFrequencies = ['One-Time', 'Weekly', 'Bi-Weekly', 'Monthly'];
   protected isSubmittingLead = false;
   protected isLoadingSlots = false;
+  protected selectedServiceType = '';
   protected selectedConsultationType = 'In-Person Consultation';
   protected selectedPreferredDate = '';
   protected selectedPreferredTimeSlot = '';
@@ -59,6 +65,18 @@ export class ContactPage implements OnInit {
     this.selectedConsultationType = element?.value || 'In-Person Consultation';
     this.clearFieldError('consultationType');
     await this.loadAvailableTimeSlots();
+  }
+
+  protected handleServiceTypeChange(event: Event): void {
+    const element = event.target as HTMLSelectElement | null;
+    this.selectedServiceType = element?.value || '';
+    this.clearFieldError('serviceType');
+
+    if (!this.isCleaningServiceSelected()) {
+      this.clearFieldError('cleaningPropertyType');
+      this.clearFieldError('cleaningSquareFootage');
+      this.clearFieldError('cleaningFrequency');
+    }
   }
 
   protected async handlePreferredDateChange(event: Event): Promise<void> {
@@ -118,6 +136,10 @@ export class ContactPage implements OnInit {
     return this.fieldErrors[field] ?? '';
   }
 
+  protected isCleaningServiceSelected(): boolean {
+    return this.isCleaningServiceType(this.selectedServiceType);
+  }
+
   protected async submitLead(event: Event): Promise<void> {
     event.preventDefault();
 
@@ -128,12 +150,16 @@ export class ContactPage implements OnInit {
     const email = String(formData.get('email') ?? '').trim();
     const phone = String(formData.get('phone') ?? '').trim();
     const serviceType = String(formData.get('serviceType') ?? '').trim();
+    const cleaningPropertyType = String(formData.get('cleaningPropertyType') ?? '').trim();
+    const cleaningSquareFootage = String(formData.get('cleaningSquareFootage') ?? '').trim();
+    const cleaningFrequency = String(formData.get('cleaningFrequency') ?? '').trim();
     const consultationType = String(formData.get('consultationType') ?? '').trim();
     const preferredDate = String(formData.get('preferredDate') ?? '').trim();
     const preferredTimeSlot = String(formData.get('preferredTimeSlot') ?? '').trim();
     const message = String(formData.get('message') ?? '').trim();
     const website = String(formData.get('website') ?? '').trim();
 
+    this.selectedServiceType = serviceType;
     this.selectedPreferredDate = preferredDate;
     this.selectedPreferredTimeSlot = preferredTimeSlot;
 
@@ -161,6 +187,24 @@ export class ContactPage implements OnInit {
     if (!serviceType) {
       this.setFieldError('serviceType', 'Please select a service.');
       hasErrors = true;
+    }
+
+    const isCleaningService = this.isCleaningServiceType(serviceType);
+    if (isCleaningService) {
+      if (!cleaningPropertyType) {
+        this.setFieldError('cleaningPropertyType', 'Please choose residential or commercial.');
+        hasErrors = true;
+      }
+
+      if (!cleaningSquareFootage) {
+        this.setFieldError('cleaningSquareFootage', 'Please enter approximate square footage.');
+        hasErrors = true;
+      }
+
+      if (!cleaningFrequency) {
+        this.setFieldError('cleaningFrequency', 'Please choose a cleaning frequency.');
+        hasErrors = true;
+      }
     }
 
     if (!consultationType) {
@@ -222,6 +266,39 @@ export class ContactPage implements OnInit {
       hasErrors = true;
     }
 
+    if (isCleaningService) {
+      if (!this.cleaningPropertyTypes.includes(cleaningPropertyType)) {
+        this.setFieldError('cleaningPropertyType', 'Please select a valid property type.');
+        hasErrors = true;
+      }
+
+      if (!/^\d+$/.test(cleaningSquareFootage)) {
+        this.setFieldError('cleaningSquareFootage', 'Square footage must be a whole number.');
+        hasErrors = true;
+      } else {
+        const sqft = Number.parseInt(cleaningSquareFootage, 10);
+        if (sqft < 100 || sqft > 200000) {
+          this.setFieldError('cleaningSquareFootage', 'Square footage must be between 100 and 200000.');
+          hasErrors = true;
+        }
+      }
+
+      if (!this.cleaningFrequencies.includes(cleaningFrequency)) {
+        this.setFieldError('cleaningFrequency', 'Please select a valid cleaning frequency.');
+        hasErrors = true;
+      }
+
+      if (this.hasDisallowedControlChars(cleaningPropertyType)) {
+        this.setFieldError('cleaningPropertyType', 'This field contains invalid characters.');
+        hasErrors = true;
+      }
+
+      if (this.hasDisallowedControlChars(cleaningFrequency)) {
+        this.setFieldError('cleaningFrequency', 'This field contains invalid characters.');
+        hasErrors = true;
+      }
+    }
+
     if (preferredDate < this.minBookingDate) {
       this.setFieldError('preferredDate', 'Please choose today or a future date.');
       hasErrors = true;
@@ -245,13 +322,16 @@ export class ContactPage implements OnInit {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-        fullName,
-        email,
-        phone,
-        serviceType,
-        consultationType,
-        preferredDate,
-        preferredTimeSlot,
+          fullName,
+          email,
+          phone,
+          serviceType,
+          cleaningPropertyType,
+          cleaningSquareFootage,
+          cleaningFrequency,
+          consultationType,
+          preferredDate,
+          preferredTimeSlot,
           website,
           message
         })
@@ -262,6 +342,7 @@ export class ContactPage implements OnInit {
       }
 
       form.reset();
+      this.selectedServiceType = '';
       this.selectedPreferredDate = '';
       this.selectedPreferredTimeSlot = '';
       this.fieldErrors = {};
@@ -353,5 +434,9 @@ export class ContactPage implements OnInit {
     }
 
     this.fieldErrors[field] = '';
+  }
+
+  private isCleaningServiceType(serviceType: string): boolean {
+    return serviceType === 'Residential Cleaning' || serviceType === 'Commercial Cleaning' || serviceType === 'Painting + Cleaning';
   }
 }
