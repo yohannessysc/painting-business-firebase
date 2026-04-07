@@ -12,6 +12,11 @@ export const routes: Routes = [
 		title: 'Evolution Painting Solutions | Services'
 	},
 	{
+		path: 'cleaning',
+		loadComponent: () => import('./pages/cleaning.page').then((m) => m.CleaningPage),
+		title: 'Evolution Painting Solutions | Cleaning Services'
+	},
+	{
 		path: 'process',
 		loadComponent: () => import('./pages/process.page').then((m) => m.ProcessPage),
 		title: 'Evolution Painting Solutions | Process'

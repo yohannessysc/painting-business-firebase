@@ -30,21 +30,25 @@ export class HomePage {
     {
       title: 'Quality Checked',
       description: 'Final walkthrough and touch-ups before closeout.'
+    },
+    {
+      title: 'Weekend-Friendly Scheduling',
+      description: 'Focused booking windows for teams that need flexible service days.'
     }
   ];
 
-  protected readonly featuredServices = [
+  protected readonly featuredTracks = [
     {
-      title: 'Interior Painting',
-      description: 'Walls, ceilings, and trim done clean and fast.'
+      title: 'Painting Services',
+      description: 'Interior, exterior, cabinet, and commercial paint work with prep and daily cleanup.',
+      cta: '/services',
+      ctaLabel: 'Explore Painting'
     },
     {
-      title: 'Exterior Painting',
-      description: 'Durable coatings for siding, stucco, and trim.'
-    },
-    {
-      title: 'Cabinet Refinishing',
-      description: 'Smooth cabinet refinishing without full replacement.'
+      title: 'Cleaning Services',
+      description: 'Residential and commercial cleaning scoped by size, frequency, and property needs.',
+      cta: '/cleaning',
+      ctaLabel: 'Explore Cleaning'
     }
   ];
 
@@ -52,7 +56,7 @@ export class HomePage {
     {
       step: 'Step 01',
       title: 'Tell Us The Scope',
-      description: 'Share what you need painted and your target timeline.'
+      description: 'Share what you need for painting, cleaning, or both and your target timeline.'
     },
     {
       step: 'Step 02',

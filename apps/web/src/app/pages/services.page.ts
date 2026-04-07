@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { services } from '../site-content';
 
 @Component({
   selector: 'app-services-page',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './services.page.html',
   styleUrl: './services.page.scss'
 })

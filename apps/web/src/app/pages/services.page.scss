@@ -86,8 +86,21 @@ h2 {
 
 .estimator-panel,
 .scope-panel,
-.faq-panel {
+.faq-panel,
+.cross-service-panel {
   margin-top: 1rem;
+}
+
+.cross-link {
+  margin-top: 0.75rem;
+  text-decoration: none;
+  color: var(--brand-deep);
+  font-weight: 700;
+  display: inline-flex;
+}
+
+.cross-link:hover {
+  text-decoration: underline;
 }
 
 .estimator-form {

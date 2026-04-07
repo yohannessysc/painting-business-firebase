@@ -7,14 +7,14 @@
     (error)="handleImageError($event)"
   />
   <div class="hero-overlay">
-    <p class="eyebrow">Owner-Led | Detail-Focused | Clean Worksites</p>
-    <h1>Premium Painting. Clean Process. Reliable Results.</h1>
+    <p class="eyebrow">Owner-Led | Painting And Cleaning | Clean Worksites</p>
+    <h1>Property Services Built For Busy Homes And Businesses.</h1>
     <p>
-      <strong>{{ companyName }}</strong> helps homes and businesses look sharp without the usual project stress.
+      <strong>{{ companyName }}</strong> now delivers both professional painting and cleaning with one accountable team.
     </p>
     <div class="hero-actions">
       <a class="btn btn-primary" routerLink="/contact">Request Free Quote</a>
-      <a class="btn btn-secondary" routerLink="/services">See Services</a>
+      <a class="btn btn-secondary" routerLink="/cleaning">See Cleaning Services</a>
     </div>
   </div>
 </section>
@@ -31,7 +31,7 @@
 <section class="priorities">
   <div class="section-head">
     <p class="eyebrow eyebrow-dark">What Makes Us Different</p>
-    <h2>Quality-Driven Painting Without The Usual Stress</h2>
+    <h2>One Team For Painting And Cleaning, With Clear Scope Every Time</h2>
   </div>
   <div class="priority-grid">
     @for (item of customerPriorities; track item.title) {
@@ -45,14 +45,15 @@
 
 <section class="service-teaser">
   <div class="section-head">
-    <p class="eyebrow eyebrow-dark">Core Services</p>
-    <h2>Popular Painting Services In Ottawa And Surrounding Areas</h2>
+    <p class="eyebrow eyebrow-dark">Service Tracks</p>
+    <h2>Choose The Right Track And Get A Focused Quote Fast</h2>
   </div>
   <div class="teaser-grid">
-    @for (item of featuredServices; track item.title) {
+    @for (item of featuredTracks; track item.title) {
       <article>
         <h3>{{ item.title }}</h3>
         <p>{{ item.description }}</p>
+        <a class="teaser-link" [routerLink]="item.cta">{{ item.ctaLabel }}</a>
       </article>
     }
   </div>
@@ -75,11 +76,11 @@
 </section>
 
 <section class="home-cta">
-  <h2>Ready For A Fresh, Professional Finish?</h2>
-  <p>Tell us the scope and timing. We will send a clear quote fast.</p>
+  <h2>Need Painting, Cleaning, Or Both?</h2>
+  <p>Tell us the property type, timing, and scope. We will send a clear plan and next steps quickly.</p>
   <p class="micro-note">No account setup. No friction. Direct response from our team.</p>
   <div class="hero-actions">
     <a class="btn btn-primary" routerLink="/contact">Start Your Quote</a>
-    <a class="btn btn-secondary" routerLink="/projects">View Project Results</a>
+    <a class="btn btn-secondary" routerLink="/cleaning">View Cleaning Options</a>
   </div>
 </section>

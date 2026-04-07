@@ -22,6 +22,9 @@ const allowedServiceTypes = [
   "Exterior Painting",
   "Cabinet Refinishing",
   "Commercial Spaces",
+  "Residential Cleaning",
+  "Commercial Cleaning",
+  "Painting + Cleaning",
 ] as const;
 
 const allowedConsultationTypes = [
@@ -235,6 +238,9 @@ function calculateEstimateRange(input: EstimateInput): { low: number; high: numb
     "Exterior Painting": 3200,
     "Cabinet Refinishing": 2200,
     "Commercial Spaces": 4500,
+    "Residential Cleaning": 350,
+    "Commercial Cleaning": 900,
+    "Painting + Cleaning": 2600,
   };
 
   const sizeMultiplier: Record<string, number> = {
