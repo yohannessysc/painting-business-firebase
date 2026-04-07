@@ -22,4 +22,8 @@ export class App {
     image.onerror = null;
     image.src = '/images/eps-logo.svg';
   }
+
+  protected closeServicesMenu(menu: HTMLDetailsElement): void {
+    menu.removeAttribute('open');
+  }
 }

@@ -11,9 +11,19 @@
 ## Current Public Endpoints
 
 - `GET /health` and `GET /api/health`
+- `GET /slots` and `GET /api/slots`
 - `POST /leads` and `POST /api/leads`
+- `POST /estimates` and `POST /api/estimates`
 
 The API accepts both prefixed and non-prefixed paths for flexibility.
+
+## Admin Endpoints
+
+- `GET /admin/leads` and `GET /api/admin/leads`
+- `PATCH /admin/leads/:leadId/status` and `PATCH /api/admin/leads/:leadId/status`
+- `POST /admin/seed` and `POST /api/admin/seed`
+
+Admin routes require a valid Firebase ID token and `users/{uid}.role = "admin"`.
 
 ## Lead Payload Contract
 
@@ -25,10 +35,22 @@ Required fields:
 - `email: string`
 - `phone: string`
 - `serviceType: string`
+- `consultationType: string`
+- `preferredDate: string` (ISO date)
+- `preferredTimeSlot: string`
+
+Conditional service detail fields (required for `Painting`, `Cleaning`, and `Painting + Cleaning`):
+
+- `servicePropertyType: "Residential" | "Commercial"`
+- `serviceSquareFootage: string` (numeric, 100-200000)
+- `serviceDetail: string`
+  - painting services: `Interior`, `Exterior`, `Interior + Exterior`
+  - cleaning services: `One-Time`, `Weekly`, `Bi-Weekly`, `Monthly`
 
 Optional fields:
 
 - `message: string`
+- `website: string` (honeypot, must be empty)
 
 Server-generated fields:
 
@@ -36,6 +58,16 @@ Server-generated fields:
 - `source: "website"`
 - `createdAt: Timestamp`
 - `updatedAt: Timestamp`
+
+## Lead Validation And Protection
+
+- Input length limits for name, email, phone, and message.
+- Email and phone format validation.
+- Control character filtering.
+- Date and slot consistency checks.
+- In-memory per-IP rate limiting for lead submissions.
+- JSON payload size limit.
+- Honeypot field support for basic bot filtering.
 
 ## Firestore Collections
 
@@ -50,7 +82,16 @@ Example document:
   "fullName": "Jane Doe",
   "email": "jane@example.com",
   "phone": "(000) 000-0000",
-  "serviceType": "Interior Painting",
+  "serviceType": "Painting + Cleaning",
+  "serviceDetails": {
+    "propertyType": "Residential",
+    "squareFootage": 1800,
+    "detailType": "paintingScope",
+    "detailValue": "Interior + Exterior"
+  },
+  "consultationType": "Virtual Consultation",
+  "preferredDate": "2026-04-12",
+  "preferredTimeSlot": "10:00 AM - 12:00 PM",
   "message": "3-bedroom repaint",
   "status": "new",
   "source": "website",

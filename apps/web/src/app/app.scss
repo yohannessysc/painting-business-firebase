@@ -86,6 +86,59 @@
   transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
+.nav-services {
+  position: relative;
+}
+
+.nav-services summary {
+  list-style: none;
+  text-decoration: none;
+  color: #d9e7f1;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #0000;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.nav-services summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-services summary::after {
+  content: ' \25BE';
+  font-size: 0.72rem;
+}
+
+.nav-services summary:hover,
+.nav-services[open] summary {
+  border-color: color-mix(in srgb, #ffffff 32%, #173d56);
+  background: color-mix(in srgb, #ffffff 15%, #173d56);
+  color: #ffffff;
+}
+
+.nav-services-menu {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  min-width: 10rem;
+  padding: 0.36rem;
+  border-radius: 0.7rem;
+  border: 1px solid color-mix(in srgb, #ffffff 30%, #173d56);
+  background: linear-gradient(160deg, #173d56 0%, #11334a 100%);
+  box-shadow: 0 14px 24px -20px rgba(10, 23, 35, 0.75);
+  display: grid;
+  gap: 0.2rem;
+  z-index: 50;
+}
+
+.nav-services-menu a {
+  width: 100%;
+  text-align: left;
+}
+
 .nav-links a:hover {
   border-color: color-mix(in srgb, #ffffff 32%, #173d56);
   background: color-mix(in srgb, #ffffff 15%, #173d56);
@@ -224,6 +277,22 @@
     text-align: center;
   }
 
+  .nav-services {
+    grid-column: span 1;
+  }
+
+  .nav-services-menu {
+    position: static;
+    margin-top: 0.32rem;
+    min-width: 0;
+    box-shadow: none;
+    padding: 0.24rem;
+  }
+
+  .nav-services-menu a {
+    text-align: center;
+  }
+
   .topbar-cta {
     display: none;
   }
@@ -286,6 +355,10 @@
   .nav-links {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.34rem;
+  }
+
+  .nav-services {
+    grid-column: span 2;
   }
 
   .nav-links a {

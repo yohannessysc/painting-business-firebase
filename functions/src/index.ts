@@ -18,6 +18,9 @@ const auth = getAuth();
 type AuthenticatedRequest = Request & { userId?: string };
 
 const allowedServiceTypes = [
+  "Painting",
+  "Cleaning",
+  "Painting + Cleaning",
   "Interior Painting",
   "Exterior Painting",
   "Cabinet Refinishing",
@@ -29,6 +32,10 @@ const allowedConsultationTypes = [
   "Virtual Consultation",
   "Phone Planning Call",
 ] as const;
+
+const allowedCleaningPropertyTypes = ["Residential", "Commercial"] as const;
+const allowedCleaningFrequencies = ["One-Time", "Weekly", "Bi-Weekly", "Monthly"] as const;
+const allowedPaintingScopes = ["Interior", "Exterior", "Interior + Exterior"] as const;
 
 const daytimeSlots = [
   "8:00 AM - 10:00 AM",
@@ -231,6 +238,9 @@ type EstimateInput = {
 
 function calculateEstimateRange(input: EstimateInput): { low: number; high: number } {
   const baseByService: Record<string, number> = {
+    Painting: 2600,
+    Cleaning: 700,
+    "Painting + Cleaning": 3200,
     "Interior Painting": 1800,
     "Exterior Painting": 3200,
     "Cabinet Refinishing": 2200,
@@ -340,6 +350,9 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     email,
     phone,
     serviceType,
+    servicePropertyType,
+    serviceSquareFootage,
+    serviceDetail,
     consultationType,
     preferredDate,
     preferredTimeSlot,
@@ -351,11 +364,16 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
   const normalizedEmail = String(email ?? "").trim().toLowerCase();
   const normalizedPhone = String(phone ?? "").trim();
   const normalizedServiceType = String(serviceType ?? "").trim();
+  const normalizedServicePropertyType = String(servicePropertyType ?? "").trim();
+  const normalizedServiceSquareFootage = String(serviceSquareFootage ?? "").trim();
+  const normalizedServiceDetail = String(serviceDetail ?? "").trim();
   const normalizedConsultationType = String(consultationType ?? "").trim();
   const normalizedPreferredDate = String(preferredDate ?? "").trim();
   const normalizedPreferredTimeSlot = String(preferredTimeSlot ?? "").trim();
   const normalizedMessage = String(message ?? "").trim();
   const normalizedWebsite = String(website ?? "").trim();
+  const needsServiceDetails = ["Painting", "Cleaning", "Painting + Cleaning"].includes(normalizedServiceType);
+  const isPaintingLead = ["Painting", "Painting + Cleaning"].includes(normalizedServiceType);
 
   if (normalizedWebsite) {
     res.status(202).json({ ok: true });
@@ -398,6 +416,38 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     return;
   }
 
+  let parsedServiceSquareFootage = 0;
+  if (needsServiceDetails) {
+    if (
+      !allowedCleaningPropertyTypes.includes(
+        normalizedServicePropertyType as (typeof allowedCleaningPropertyTypes)[number],
+      )
+    ) {
+      res.status(400).json({ error: "Unsupported service property type" });
+      return;
+    }
+
+    if (!/^\d+$/.test(normalizedServiceSquareFootage)) {
+      res.status(400).json({ error: "Invalid service square footage" });
+      return;
+    }
+
+    parsedServiceSquareFootage = Number.parseInt(normalizedServiceSquareFootage, 10);
+    if (parsedServiceSquareFootage < 100 || parsedServiceSquareFootage > 200000) {
+      res.status(400).json({ error: "Service square footage out of range" });
+      return;
+    }
+
+    const validServiceDetail = isPaintingLead
+      ? allowedPaintingScopes.includes(normalizedServiceDetail as (typeof allowedPaintingScopes)[number])
+      : allowedCleaningFrequencies.includes(normalizedServiceDetail as (typeof allowedCleaningFrequencies)[number]);
+
+    if (!validServiceDetail) {
+      res.status(400).json({ error: "Unsupported service detail option" });
+      return;
+    }
+  }
+
   if (!allowedConsultationTypes.includes(normalizedConsultationType as (typeof allowedConsultationTypes)[number])) {
     res.status(400).json({ error: "Unsupported consultation type" });
     return;
@@ -428,7 +478,9 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     hasDisallowedControlChars(normalizedFullName) ||
     hasDisallowedControlChars(normalizedEmail) ||
     hasDisallowedControlChars(normalizedPhone) ||
-    hasDisallowedControlChars(normalizedMessage)
+    hasDisallowedControlChars(normalizedMessage) ||
+    hasDisallowedControlChars(normalizedServicePropertyType) ||
+    hasDisallowedControlChars(normalizedServiceDetail)
   ) {
     res.status(400).json({ error: "Lead fields contain invalid characters" });
     return;
@@ -440,6 +492,16 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     email: normalizedEmail,
     phone: normalizedPhone,
     serviceType: normalizedServiceType,
+    ...(needsServiceDetails
+      ? {
+          serviceDetails: {
+            propertyType: normalizedServicePropertyType as (typeof allowedCleaningPropertyTypes)[number],
+            squareFootage: parsedServiceSquareFootage,
+            detailType: isPaintingLead ? "paintingScope" : "cleaningFrequency",
+            detailValue: normalizedServiceDetail,
+          },
+        }
+      : {}),
     consultationType: normalizedConsultationType,
     preferredDate: normalizedPreferredDate,
     preferredTimeSlot: normalizedPreferredTimeSlot,

@@ -1,0 +1,43 @@
+<section class="section cleaning-hero">
+  <p class="eyebrow">Cleaning Services</p>
+  <h1>Residential And Commercial Cleaning With Clear Scope</h1>
+  <p>
+    Keep one trusted point of contact for painting and cleaning. We scope each cleaning quote by size,
+    frequency, and priority areas so expectations stay clear from day one.
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" routerLink="/contact">Request Cleaning Quote</a>
+    <a class="btn btn-secondary" routerLink="/services">View Painting Services</a>
+  </div>
+</section>
+
+<section class="section track-grid" aria-label="Cleaning service tracks">
+  @for (track of cleaningTracks; track track.title) {
+    <article>
+      <div class="track-media">
+        <img [src]="track.imageUrl" [alt]="track.imageAlt" loading="lazy" />
+      </div>
+      <p class="eyebrow">{{ track.title }}</p>
+      <h2>{{ track.subtitle }}</h2>
+      <ul>
+        @for (item of track.highlights; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </article>
+  }
+</section>
+
+<section class="section quote-inputs">
+  <p class="eyebrow">Fast Quotes</p>
+  <h2>What We Need To Price Cleaning Correctly</h2>
+  <ul>
+    @for (item of quoteInputs; track item) {
+      <li>{{ item }}</li>
+    }
+  </ul>
+  <p class="note">
+    If you need both painting and cleaning, select the combined service in the contact form and we will
+    build one coordinated plan.
+  </p>
+</section>

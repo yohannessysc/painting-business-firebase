@@ -1,0 +1,54 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Write Firebase service account key
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EPS_YK_2026 }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "Missing FIREBASE_SERVICE_ACCOUNT_EPS_YK_2026 secret"
+            exit 1
+          fi
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
+
+      - name: Install and build web app
+        run: |
+          cd apps/web
+          npm ci
+          npm run build
+
+      - name: Install and build functions
+        run: |
+          cd functions
+          npm ci
+          npm run build
+
+      - name: Deploy to production
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
+          PROJECT_ID: eps-yk-2026
+        run: firebase deploy --only hosting,functions --project "$PROJECT_ID"
