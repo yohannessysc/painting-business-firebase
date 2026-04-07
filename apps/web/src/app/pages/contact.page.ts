@@ -25,12 +25,13 @@ export class ContactPage implements OnInit {
     fullName: 100,
     email: 254,
     phone: 25,
-    message: 1500
+    message: 1000
   } as const;
 
   protected readonly contactEmail = contactEmail;
   protected readonly contactPhone = contactPhone;
   protected readonly serviceAreas = serviceAreas;
+  protected readonly messageMaxLength = ContactPage.maxLengths.message;
   protected readonly minBookingDate = ContactPage.toUtcIsoDate(new Date());
   protected readonly consultationModes = [
     'On-site estimate for larger projects',
@@ -55,6 +56,7 @@ export class ContactPage implements OnInit {
   ];
   protected leadSuccessMessage = '';
   protected leadErrorMessage = '';
+  protected messageLength = 0;
   protected fieldErrors: Partial<Record<LeadFormField, string>> = {};
 
   async ngOnInit(): Promise<void> {
@@ -95,6 +97,12 @@ export class ContactPage implements OnInit {
 
   protected handleFieldInput(field: LeadFormField): void {
     this.clearFieldError(field);
+  }
+
+  protected handleMessageInput(event: Event): void {
+    const element = event.target as HTMLTextAreaElement | null;
+    this.messageLength = element?.value.length ?? 0;
+    this.handleFieldInput('message');
   }
 
   protected get bookingHelperMessage(): string {
@@ -248,6 +256,7 @@ export class ContactPage implements OnInit {
     }
 
     if (hasErrors) {
+      this.leadErrorMessage = 'Please correct the highlighted fields and try again.';
       return;
     }
 
@@ -267,7 +276,7 @@ export class ContactPage implements OnInit {
     }
 
     if (message.length > ContactPage.maxLengths.message) {
-      this.setFieldError('message', 'Project details are too long (maximum 1500 characters).');
+      this.setFieldError('message', 'Project details are too long (maximum 1000 characters).');
       hasErrors = true;
     }
 
@@ -339,6 +348,7 @@ export class ContactPage implements OnInit {
     }
 
     if (hasErrors) {
+      this.leadErrorMessage = 'Please correct the highlighted fields and try again.';
       return;
     }
 
@@ -367,17 +377,21 @@ export class ContactPage implements OnInit {
       });
 
       if (!response.ok) {
-        throw new Error('Lead API request failed');
+        const errorPayload = (await response.json().catch(() => null)) as { error?: string } | null;
+        const detail = errorPayload?.error ? ` (${errorPayload.error})` : '';
+        throw new Error(`Lead API request failed${detail}`);
       }
 
       form.reset();
       this.selectedServiceType = '';
       this.selectedPreferredDate = '';
       this.selectedPreferredTimeSlot = '';
+      this.messageLength = 0;
       this.fieldErrors = {};
       this.leadSuccessMessage = 'Thanks. Your quote request was sent successfully.';
-    } catch {
-      this.leadErrorMessage = 'Unable to submit right now. Please try again shortly.';
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      this.leadErrorMessage = `Unable to submit right now. Please try again shortly. ${message}`;
     } finally {
       this.isSubmittingLead = false;
     }

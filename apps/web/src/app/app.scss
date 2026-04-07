@@ -77,6 +77,9 @@
 
 .nav-links a {
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #d9e7f1;
   font-size: 0.85rem;
   font-weight: 700;
@@ -90,7 +93,12 @@
   position: relative;
 }
 
-.nav-services summary {
+.nav-services-trigger {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
   list-style: none;
   text-decoration: none;
   color: #d9e7f1;
@@ -98,22 +106,18 @@
   font-weight: 700;
   border-radius: 999px;
   padding: 0.45rem 0.7rem;
-  border: 1px solid #0000;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
-.nav-services summary::-webkit-details-marker {
-  display: none;
-}
-
-.nav-services summary::after {
+.nav-services-trigger::after {
   content: ' \25BE';
   font-size: 0.72rem;
 }
 
-.nav-services summary:hover,
-.nav-services[open] summary {
+.nav-services-trigger:hover,
+.nav-services.is-open .nav-services-trigger {
   border-color: color-mix(in srgb, #ffffff 32%, #173d56);
   background: color-mix(in srgb, #ffffff 15%, #173d56);
   color: #ffffff;
@@ -129,9 +133,13 @@
   border: 1px solid color-mix(in srgb, #ffffff 30%, #173d56);
   background: linear-gradient(160deg, #173d56 0%, #11334a 100%);
   box-shadow: 0 14px 24px -20px rgba(10, 23, 35, 0.75);
-  display: grid;
+  display: none;
   gap: 0.2rem;
   z-index: 50;
+}
+
+.nav-services-menu.is-open {
+  display: grid;
 }
 
 .nav-services-menu a {
@@ -278,19 +286,24 @@
   }
 
   .nav-services {
-    grid-column: span 1;
+    min-width: 0;
   }
 
   .nav-services-menu {
-    position: static;
-    margin-top: 0.32rem;
-    min-width: 0;
-    box-shadow: none;
+    position: absolute;
+    left: 0;
+    right: auto;
+    top: calc(100% + 0.32rem);
+    min-width: 9.5rem;
     padding: 0.24rem;
+    box-shadow: 0 12px 20px -18px rgba(10, 23, 35, 0.8);
   }
 
+  .nav-services-trigger,
   .nav-services-menu a {
     text-align: center;
+    width: 100%;
+    min-height: 2.2rem;
   }
 
   .topbar-cta {
@@ -353,12 +366,8 @@
   }
 
   .nav-links {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.34rem;
-  }
-
-  .nav-services {
-    grid-column: span 2;
   }
 
   .nav-links a {

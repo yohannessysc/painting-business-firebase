@@ -322,6 +322,111 @@ function serializeLead(data: Record<string, unknown>, id: string): Record<string
   };
 }
 
+type PersistedLead = LeadDocument & {
+  customerId?: string;
+  jobId?: string;
+  convertedAt?: Timestamp;
+  updatedBy?: string;
+};
+
+type SyncWrite = {
+  ref: FirebaseFirestore.DocumentReference;
+  data: Record<string, unknown>;
+};
+
+function shouldSyncLeadToCustomer(status: string): boolean {
+  return status === "scheduled" || status === "closed";
+}
+
+function shouldSyncLeadToJob(status: string): boolean {
+  return status === "scheduled";
+}
+
+function buildLeadSyncWrites(input: {
+  leadId: string;
+  lead: PersistedLead;
+  nextStatus: string;
+  now: Timestamp;
+  updatedBy: string;
+}): { writes: SyncWrite[]; customerId: string; jobId: string | null } {
+  const { leadId, lead, nextStatus, now, updatedBy } = input;
+
+  const writes: SyncWrite[] = [];
+  const customerId = String(lead.customerId ?? "").trim() || `lead-${leadId}`;
+  const existingJobId = String(lead.jobId ?? "").trim();
+  const shouldCreateJob = shouldSyncLeadToJob(nextStatus);
+  const shouldUpdateExistingJob = nextStatus === "closed" && Boolean(existingJobId);
+  const jobId = shouldCreateJob
+    ? existingJobId || `lead-${leadId}-job`
+    : shouldUpdateExistingJob
+      ? existingJobId
+      : null;
+  const customerStatus = nextStatus === "closed" ? "inactive" : "active";
+
+  const leadRef = db.collection("leads").doc(leadId);
+  const leadUpdate: Record<string, unknown> = {
+    status: nextStatus,
+    updatedAt: now,
+    updatedBy,
+    customerId,
+    convertedAt: lead.convertedAt ?? now,
+  };
+
+  if (jobId) {
+    leadUpdate.jobId = jobId;
+  }
+
+  writes.push({ ref: leadRef, data: leadUpdate });
+
+  const customerRef = db.collection("customers").doc(customerId);
+  writes.push({
+    ref: customerRef,
+    data: {
+      fullName: lead.fullName,
+      email: lead.email,
+      phone: lead.phone,
+      status: customerStatus,
+      sourceLeadId: leadId,
+      notes: lead.message || "Converted from website lead",
+      createdAt: now,
+      updatedAt: now,
+      schemaVersion: "v1",
+    },
+  });
+
+  if (jobId) {
+    const estimate = calculateEstimateRange({
+      serviceType: lead.serviceType,
+      projectSize: "medium",
+      condition: "standard",
+    });
+    const propertyType = lead.serviceDetails?.propertyType ?? "Unspecified";
+    const location = `${propertyType} property`;
+    const jobStatus = nextStatus === "closed" ? "completed" : "scheduled";
+
+    const jobRef = db.collection("jobs").doc(jobId);
+    writes.push({
+      ref: jobRef,
+      data: {
+        customerId,
+        title: `${lead.serviceType} - ${lead.fullName}`,
+        serviceType: lead.serviceType,
+        location,
+        status: jobStatus,
+        scheduledDate: lead.preferredDate,
+        budgetLow: estimate.low,
+        budgetHigh: estimate.high,
+        sourceLeadId: leadId,
+        createdAt: now,
+        updatedAt: now,
+        schemaVersion: "v1",
+      },
+    });
+  }
+
+  return { writes, customerId, jobId };
+}
+
 const app = express();
 const corsHandler = cors({ origin: true });
 
@@ -659,16 +764,138 @@ app.patch(
         return;
       }
 
-      await leadRef.update({
-        status: nextStatus,
-        updatedAt: Timestamp.now(),
-        updatedBy: req.userId ?? "system",
+      const now = Timestamp.now();
+      const updatedBy = req.userId ?? "system";
+      const lead = snapshot.data() as PersistedLead;
+
+      if (!shouldSyncLeadToCustomer(nextStatus)) {
+        await leadRef.set(
+          {
+            status: nextStatus,
+            updatedAt: now,
+            updatedBy,
+          },
+          { merge: true },
+        );
+
+        res.status(200).json({ ok: true, id: leadId, status: nextStatus });
+        return;
+      }
+
+      const { writes, customerId, jobId } = buildLeadSyncWrites({
+        leadId,
+        lead,
+        nextStatus,
+        now,
+        updatedBy,
       });
 
-      res.status(200).json({ ok: true, id: leadId, status: nextStatus });
+      const batch = db.batch();
+      for (const write of writes) {
+        batch.set(write.ref, write.data, { merge: true });
+      }
+
+      await batch.commit();
+
+      res.status(200).json({
+        ok: true,
+        id: leadId,
+        status: nextStatus,
+        customerId,
+        jobId,
+      });
     } catch (error) {
       console.error("Failed to update lead status", error);
       res.status(500).json({ error: "Failed to update lead status" });
+    }
+  },
+);
+
+app.post(
+  ["/admin/leads/sync", "/api/admin/leads/sync"],
+  async (req: AuthenticatedRequest, res: Response) => {
+    if (!(await requireAdmin(req, res))) {
+      return;
+    }
+
+    const limit = normalizePositiveLimit(String(req.body?.limit ?? "100"), 100);
+    const dryRun = Boolean(req.body?.dryRun);
+    const now = Timestamp.now();
+    const updatedBy = req.userId ?? "system";
+
+    try {
+      const [scheduledSnapshot, closedSnapshot] = await Promise.all([
+        db.collection("leads").where("status", "==", "scheduled").orderBy("updatedAt", "desc").limit(limit).get(),
+        db.collection("leads").where("status", "==", "closed").orderBy("updatedAt", "desc").limit(limit).get(),
+      ]);
+
+      const leadMap = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
+      for (const doc of scheduledSnapshot.docs) {
+        leadMap.set(doc.id, doc);
+      }
+      for (const doc of closedSnapshot.docs) {
+        leadMap.set(doc.id, doc);
+      }
+
+      const leadsToSync = Array.from(leadMap.values())
+        .map((doc) => ({ id: doc.id, data: doc.data() as PersistedLead }))
+        .filter(({ data }) => {
+          if (!shouldSyncLeadToCustomer(data.status)) {
+            return false;
+          }
+
+          if (data.status === "scheduled") {
+            return !data.customerId || !data.jobId;
+          }
+
+          return !data.customerId;
+        })
+        .slice(0, limit);
+
+      if (leadsToSync.length === 0) {
+        res.status(200).json({ ok: true, syncedLeads: 0, details: [] });
+        return;
+      }
+
+      const plannedDetails = leadsToSync.map(({ id, data }) => {
+        const customerId = String(data.customerId ?? "").trim() || `lead-${id}`;
+        const jobId = shouldSyncLeadToJob(data.status)
+          ? String(data.jobId ?? "").trim() || `lead-${id}-job`
+          : null;
+
+        return { leadId: id, status: data.status, customerId, jobId };
+      });
+
+      if (dryRun) {
+        res.status(200).json({ ok: true, mode: "dryRun", syncedLeads: leadsToSync.length, details: plannedDetails });
+        return;
+      }
+
+      const batch = db.batch();
+      for (const { id, data } of leadsToSync) {
+        const { writes } = buildLeadSyncWrites({
+          leadId: id,
+          lead: data,
+          nextStatus: data.status,
+          now,
+          updatedBy,
+        });
+
+        for (const write of writes) {
+          batch.set(write.ref, write.data, { merge: true });
+        }
+      }
+
+      await batch.commit();
+
+      res.status(200).json({
+        ok: true,
+        syncedLeads: leadsToSync.length,
+        details: plannedDetails,
+      });
+    } catch (error) {
+      console.error("Failed to sync lead documents", error);
+      res.status(500).json({ error: "Failed to sync lead documents" });
     }
   },
 );

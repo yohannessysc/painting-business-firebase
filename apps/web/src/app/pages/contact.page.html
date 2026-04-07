@@ -165,19 +165,22 @@
       <textarea
         rows="4"
         name="message"
-        maxlength="1500"
+        [attr.maxlength]="messageMaxLength"
         placeholder="Scope, area size, and preferred timing"
-          (input)="handleFieldInput('message')"
+        (input)="handleMessageInput($event)"
       ></textarea>
       @if (getFieldError('message')) {
         <small class="form-field-error">{{ getFieldError('message') }}</small>
       }
+      <small class="message-counter" [class.message-counter--limit]="messageLength >= messageMaxLength">
+        {{ messageLength }}/{{ messageMaxLength }}
+      </small>
     </label>
     @if (leadSuccessMessage) {
-      <p class="form-feedback form-feedback--success">{{ leadSuccessMessage }}</p>
+      <p class="form-feedback form-feedback--success" role="status" aria-live="polite">{{ leadSuccessMessage }}</p>
     }
     @if (leadErrorMessage) {
-      <p class="form-feedback form-feedback--error">{{ leadErrorMessage }}</p>
+      <p class="form-feedback form-feedback--error" role="alert">{{ leadErrorMessage }}</p>
     }
     <p class="form-feedback">
       By submitting this form, you agree we may contact you by phone or email about your quote request.

@@ -21,6 +21,7 @@ The API accepts both prefixed and non-prefixed paths for flexibility.
 
 - `GET /admin/leads` and `GET /api/admin/leads`
 - `PATCH /admin/leads/:leadId/status` and `PATCH /api/admin/leads/:leadId/status`
+- `POST /admin/leads/sync` and `POST /api/admin/leads/sync`
 - `POST /admin/seed` and `POST /api/admin/seed`
 
 Admin routes require a valid Firebase ID token and `users/{uid}.role = "admin"`.
@@ -55,9 +56,29 @@ Optional fields:
 Server-generated fields:
 
 - `status: "new"`
+- `customerId?: string` (set when lead is converted)
+- `jobId?: string` (set when lead is scheduled)
+- `convertedAt?: Timestamp`
 - `source: "website"`
 - `createdAt: Timestamp`
 - `updatedAt: Timestamp`
+
+## Lead Conversion Sync
+
+- When admin sets a lead to `scheduled`:
+  - `customers/{lead-<leadId>}` is created/updated
+  - `jobs/{lead-<leadId>-job}` is created/updated
+  - lead doc receives `customerId`, `jobId`, `convertedAt`
+- When admin sets a lead to `closed`:
+  - `customers/{lead-<leadId>}` is created/updated
+  - lead doc receives `customerId`, `convertedAt`
+
+Backfill endpoint for existing data:
+
+- `POST /api/admin/leads/sync`
+  - Finds existing `scheduled` and `closed` leads missing links
+  - Creates missing `customers`/`jobs` records deterministically
+  - Supports `dryRun: true` to preview changes before writing
 
 ## Lead Validation And Protection
 

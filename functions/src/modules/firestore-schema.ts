@@ -66,6 +66,9 @@ export type LeadDocument = {
   preferredTimeSlot: string;
   message: string;
   status: LeadStatus;
+  customerId?: string;
+  jobId?: string;
+  convertedAt?: Timestamp;
   source: "website";
   createdAt: Timestamp;
   updatedAt: Timestamp;

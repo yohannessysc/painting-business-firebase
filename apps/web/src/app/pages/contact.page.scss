@@ -111,12 +111,32 @@ input[type='date']::-webkit-date-and-time-value {
 .quote-form input,
 .quote-form textarea,
 .quote-form select {
+  appearance: none;
+  -webkit-appearance: none;
   width: 100%;
   border: 1px solid color-mix(in srgb, var(--brand) 16%, #cfdad4);
   border-radius: 0.65rem;
   padding: 0.64rem 0.72rem;
   min-height: 2.75rem;
   font: inherit;
+  background: #fff;
+  color: var(--ink);
+}
+
+.quote-form select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, color-mix(in srgb, var(--brand) 68%, #5f7385) 50%),
+    linear-gradient(135deg, color-mix(in srgb, var(--brand) 68%, #5f7385) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1rem) calc(50% - 0.14rem),
+    calc(100% - 0.72rem) calc(50% - 0.14rem);
+  background-size: 0.32rem 0.32rem, 0.32rem 0.32rem;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
+}
+
+.quote-form option {
+  color: var(--ink);
   background: #fff;
 }
 
@@ -165,6 +185,18 @@ input[type='date']::-webkit-date-and-time-value {
   font-size: 0.8rem;
   line-height: 1.25;
   margin-top: 0.05rem;
+}
+
+.message-counter {
+  justify-self: end;
+  color: color-mix(in srgb, var(--ink-muted) 88%, #5d6871);
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.message-counter--limit {
+  color: #8f3a3a;
+  font-weight: 600;
 }
 
 .form-feedback--success {
