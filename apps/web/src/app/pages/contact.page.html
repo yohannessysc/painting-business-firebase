@@ -61,58 +61,53 @@
       Service needed
       <select name="serviceType" required (change)="handleServiceTypeChange($event)">
         <option value="">Select a service</option>
-        <option value="Interior Painting">Interior Painting</option>
-        <option value="Exterior Painting">Exterior Painting</option>
-        <option value="Cabinet Refinishing">Cabinet Refinishing</option>
-        <option value="Commercial Spaces">Commercial Spaces</option>
-        <option value="Residential Cleaning">Residential Cleaning</option>
-        <option value="Commercial Cleaning">Commercial Cleaning</option>
+        <option value="Painting">Painting</option>
+        <option value="Cleaning">Cleaning</option>
         <option value="Painting + Cleaning">Painting + Cleaning</option>
       </select>
       @if (getFieldError('serviceType')) {
         <small class="form-field-error">{{ getFieldError('serviceType') }}</small>
       }
     </label>
-    @if (isCleaningServiceSelected()) {
+    @if (isServiceDetailsSelected()) {
       <div class="cleaning-detail-grid">
         <label>
           Property type
-          <select name="cleaningPropertyType" (change)="handleFieldInput('cleaningPropertyType')">
+          <select name="servicePropertyType" (change)="handleFieldInput('servicePropertyType')">
             <option value="">Select property type</option>
             <option value="Residential">Residential</option>
             <option value="Commercial">Commercial</option>
           </select>
-          @if (getFieldError('cleaningPropertyType')) {
-            <small class="form-field-error">{{ getFieldError('cleaningPropertyType') }}</small>
+          @if (getFieldError('servicePropertyType')) {
+            <small class="form-field-error">{{ getFieldError('servicePropertyType') }}</small>
           }
         </label>
         <label>
           Approx square footage
           <input
             type="number"
-            name="cleaningSquareFootage"
+            name="serviceSquareFootage"
             min="100"
             max="200000"
             step="1"
             placeholder="e.g. 1800"
             inputmode="numeric"
-            (input)="handleFieldInput('cleaningSquareFootage')"
+            (input)="handleFieldInput('serviceSquareFootage')"
           />
-          @if (getFieldError('cleaningSquareFootage')) {
-            <small class="form-field-error">{{ getFieldError('cleaningSquareFootage') }}</small>
+          @if (getFieldError('serviceSquareFootage')) {
+            <small class="form-field-error">{{ getFieldError('serviceSquareFootage') }}</small>
           }
         </label>
         <label>
-          Cleaning frequency
-          <select name="cleaningFrequency" (change)="handleFieldInput('cleaningFrequency')">
-            <option value="">Select frequency</option>
-            <option value="One-Time">One-Time</option>
-            <option value="Weekly">Weekly</option>
-            <option value="Bi-Weekly">Bi-Weekly</option>
-            <option value="Monthly">Monthly</option>
+          {{ serviceDetailLabel }}
+          <select name="serviceDetail" (change)="handleFieldInput('serviceDetail')">
+            <option value="">{{ serviceDetailPlaceholder }}</option>
+            @for (option of serviceDetailOptions; track option) {
+              <option [value]="option">{{ option }}</option>
+            }
           </select>
-          @if (getFieldError('cleaningFrequency')) {
-            <small class="form-field-error">{{ getFieldError('cleaningFrequency') }}</small>
+          @if (getFieldError('serviceDetail')) {
+            <small class="form-field-error">{{ getFieldError('serviceDetail') }}</small>
           }
         </label>
       </div>
@@ -213,6 +208,6 @@
         <li>{{ mode }}</li>
       }
     </ul>
-    <p class="support-note">Typical response time: within 48 hours.</p>
+    <p class="support-note">Typical response time: within 2 hours.</p>
   </article>
 </section>

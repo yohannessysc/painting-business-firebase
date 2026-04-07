@@ -55,10 +55,11 @@ export type LeadDocument = {
   email: string;
   phone: string;
   serviceType: string;
-  cleaningDetails?: {
+  serviceDetails?: {
     propertyType: "Residential" | "Commercial";
     squareFootage: number;
-    frequency: "One-Time" | "Weekly" | "Bi-Weekly" | "Monthly";
+    detailType: "cleaningFrequency" | "paintingScope";
+    detailValue: string;
   };
   consultationType: string;
   preferredDate: string;

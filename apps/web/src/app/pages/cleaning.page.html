@@ -3,7 +3,7 @@
   <h1>Residential And Commercial Cleaning With Clear Scope</h1>
   <p>
     Keep one trusted point of contact for painting and cleaning. We scope each cleaning quote by size,
-    frequency, and service priorities so expectations stay clear.
+    frequency, and priority areas so expectations stay clear from day one.
   </p>
   <div class="hero-actions">
     <a class="btn btn-primary" routerLink="/contact">Request Cleaning Quote</a>
@@ -12,25 +12,20 @@
 </section>
 
 <section class="section track-grid" aria-label="Cleaning service tracks">
-  <article>
-    <p class="eyebrow">Residential</p>
-    <h2>Homes, Condos, And Apartments</h2>
-    <ul>
-      @for (item of residentialHighlights; track item) {
-        <li>{{ item }}</li>
-      }
-    </ul>
-  </article>
-
-  <article>
-    <p class="eyebrow">Commercial</p>
-    <h2>Offices, Retail, And Shared Spaces</h2>
-    <ul>
-      @for (item of commercialHighlights; track item) {
-        <li>{{ item }}</li>
-      }
-    </ul>
-  </article>
+  @for (track of cleaningTracks; track track.title) {
+    <article>
+      <div class="track-media">
+        <img [src]="track.imageUrl" [alt]="track.imageAlt" loading="lazy" />
+      </div>
+      <p class="eyebrow">{{ track.title }}</p>
+      <h2>{{ track.subtitle }}</h2>
+      <ul>
+        @for (item of track.highlights; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </article>
+  }
 </section>
 
 <section class="section quote-inputs">

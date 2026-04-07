@@ -6,9 +6,9 @@ type LeadFormField =
   | 'email'
   | 'phone'
   | 'serviceType'
-  | 'cleaningPropertyType'
-  | 'cleaningSquareFootage'
-  | 'cleaningFrequency'
+  | 'servicePropertyType'
+  | 'serviceSquareFootage'
+  | 'serviceDetail'
   | 'consultationType'
   | 'preferredDate'
   | 'preferredTimeSlot'
@@ -37,8 +37,9 @@ export class ContactPage implements OnInit {
     'Virtual quote based on photos/video',
     'Phone-first scope planning'
   ];
-  protected readonly cleaningPropertyTypes = ['Residential', 'Commercial'];
+  protected readonly servicePropertyTypes = ['Residential', 'Commercial'];
   protected readonly cleaningFrequencies = ['One-Time', 'Weekly', 'Bi-Weekly', 'Monthly'];
+  protected readonly paintingScopes = ['Interior', 'Exterior', 'Interior + Exterior'];
   protected isSubmittingLead = false;
   protected isLoadingSlots = false;
   protected selectedServiceType = '';
@@ -72,10 +73,10 @@ export class ContactPage implements OnInit {
     this.selectedServiceType = element?.value || '';
     this.clearFieldError('serviceType');
 
-    if (!this.isCleaningServiceSelected()) {
-      this.clearFieldError('cleaningPropertyType');
-      this.clearFieldError('cleaningSquareFootage');
-      this.clearFieldError('cleaningFrequency');
+    if (!this.isServiceDetailsSelected()) {
+      this.clearFieldError('servicePropertyType');
+      this.clearFieldError('serviceSquareFootage');
+      this.clearFieldError('serviceDetail');
     }
   }
 
@@ -136,8 +137,32 @@ export class ContactPage implements OnInit {
     return this.fieldErrors[field] ?? '';
   }
 
-  protected isCleaningServiceSelected(): boolean {
-    return this.isCleaningServiceType(this.selectedServiceType);
+  protected isServiceDetailsSelected(): boolean {
+    return this.isServiceWithDetails(this.selectedServiceType);
+  }
+
+  protected get serviceDetailLabel(): string {
+    if (this.isPaintingServiceType(this.selectedServiceType)) {
+      return 'Painting scope';
+    }
+
+    return 'Cleaning frequency';
+  }
+
+  protected get serviceDetailPlaceholder(): string {
+    if (this.isPaintingServiceType(this.selectedServiceType)) {
+      return 'Select scope';
+    }
+
+    return 'Select frequency';
+  }
+
+  protected get serviceDetailOptions(): string[] {
+    if (this.isPaintingServiceType(this.selectedServiceType)) {
+      return this.paintingScopes;
+    }
+
+    return this.cleaningFrequencies;
   }
 
   protected async submitLead(event: Event): Promise<void> {
@@ -150,9 +175,9 @@ export class ContactPage implements OnInit {
     const email = String(formData.get('email') ?? '').trim();
     const phone = String(formData.get('phone') ?? '').trim();
     const serviceType = String(formData.get('serviceType') ?? '').trim();
-    const cleaningPropertyType = String(formData.get('cleaningPropertyType') ?? '').trim();
-    const cleaningSquareFootage = String(formData.get('cleaningSquareFootage') ?? '').trim();
-    const cleaningFrequency = String(formData.get('cleaningFrequency') ?? '').trim();
+    const servicePropertyType = String(formData.get('servicePropertyType') ?? '').trim();
+    const serviceSquareFootage = String(formData.get('serviceSquareFootage') ?? '').trim();
+    const serviceDetail = String(formData.get('serviceDetail') ?? '').trim();
     const consultationType = String(formData.get('consultationType') ?? '').trim();
     const preferredDate = String(formData.get('preferredDate') ?? '').trim();
     const preferredTimeSlot = String(formData.get('preferredTimeSlot') ?? '').trim();
@@ -189,20 +214,20 @@ export class ContactPage implements OnInit {
       hasErrors = true;
     }
 
-    const isCleaningService = this.isCleaningServiceType(serviceType);
-    if (isCleaningService) {
-      if (!cleaningPropertyType) {
-        this.setFieldError('cleaningPropertyType', 'Please choose residential or commercial.');
+    const requiresServiceDetails = this.isServiceWithDetails(serviceType);
+    if (requiresServiceDetails) {
+      if (!servicePropertyType) {
+        this.setFieldError('servicePropertyType', 'Please choose residential or commercial.');
         hasErrors = true;
       }
 
-      if (!cleaningSquareFootage) {
-        this.setFieldError('cleaningSquareFootage', 'Please enter approximate square footage.');
+      if (!serviceSquareFootage) {
+        this.setFieldError('serviceSquareFootage', 'Please enter approximate square footage.');
         hasErrors = true;
       }
 
-      if (!cleaningFrequency) {
-        this.setFieldError('cleaningFrequency', 'Please choose a cleaning frequency.');
+      if (!serviceDetail) {
+        this.setFieldError('serviceDetail', 'Please select the service detail option.');
         hasErrors = true;
       }
     }
@@ -266,35 +291,39 @@ export class ContactPage implements OnInit {
       hasErrors = true;
     }
 
-    if (isCleaningService) {
-      if (!this.cleaningPropertyTypes.includes(cleaningPropertyType)) {
-        this.setFieldError('cleaningPropertyType', 'Please select a valid property type.');
+    if (requiresServiceDetails) {
+      if (!this.servicePropertyTypes.includes(servicePropertyType)) {
+        this.setFieldError('servicePropertyType', 'Please select a valid property type.');
         hasErrors = true;
       }
 
-      if (!/^\d+$/.test(cleaningSquareFootage)) {
-        this.setFieldError('cleaningSquareFootage', 'Square footage must be a whole number.');
+      if (!/^\d+$/.test(serviceSquareFootage)) {
+        this.setFieldError('serviceSquareFootage', 'Square footage must be a whole number.');
         hasErrors = true;
       } else {
-        const sqft = Number.parseInt(cleaningSquareFootage, 10);
+        const sqft = Number.parseInt(serviceSquareFootage, 10);
         if (sqft < 100 || sqft > 200000) {
-          this.setFieldError('cleaningSquareFootage', 'Square footage must be between 100 and 200000.');
+          this.setFieldError('serviceSquareFootage', 'Square footage must be between 100 and 200000.');
           hasErrors = true;
         }
       }
 
-      if (!this.cleaningFrequencies.includes(cleaningFrequency)) {
-        this.setFieldError('cleaningFrequency', 'Please select a valid cleaning frequency.');
+      const validDetailOptions = this.isPaintingServiceType(serviceType)
+        ? this.paintingScopes
+        : this.cleaningFrequencies;
+
+      if (!validDetailOptions.includes(serviceDetail)) {
+        this.setFieldError('serviceDetail', 'Please select a valid detail option.');
         hasErrors = true;
       }
 
-      if (this.hasDisallowedControlChars(cleaningPropertyType)) {
-        this.setFieldError('cleaningPropertyType', 'This field contains invalid characters.');
+      if (this.hasDisallowedControlChars(servicePropertyType)) {
+        this.setFieldError('servicePropertyType', 'This field contains invalid characters.');
         hasErrors = true;
       }
 
-      if (this.hasDisallowedControlChars(cleaningFrequency)) {
-        this.setFieldError('cleaningFrequency', 'This field contains invalid characters.');
+      if (this.hasDisallowedControlChars(serviceDetail)) {
+        this.setFieldError('serviceDetail', 'This field contains invalid characters.');
         hasErrors = true;
       }
     }
@@ -326,9 +355,9 @@ export class ContactPage implements OnInit {
           email,
           phone,
           serviceType,
-          cleaningPropertyType,
-          cleaningSquareFootage,
-          cleaningFrequency,
+          servicePropertyType,
+          serviceSquareFootage,
+          serviceDetail,
           consultationType,
           preferredDate,
           preferredTimeSlot,
@@ -436,7 +465,11 @@ export class ContactPage implements OnInit {
     this.fieldErrors[field] = '';
   }
 
-  private isCleaningServiceType(serviceType: string): boolean {
-    return serviceType === 'Residential Cleaning' || serviceType === 'Commercial Cleaning' || serviceType === 'Painting + Cleaning';
+  private isServiceWithDetails(serviceType: string): boolean {
+    return serviceType === 'Cleaning' || serviceType === 'Painting' || serviceType === 'Painting + Cleaning';
+  }
+
+  private isPaintingServiceType(serviceType: string): boolean {
+    return serviceType === 'Painting' || serviceType === 'Painting + Cleaning';
   }
 }

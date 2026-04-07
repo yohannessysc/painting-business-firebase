@@ -38,7 +38,7 @@ export const serviceAreas = [
 
 export const trustHighlights: TrustHighlight[] = [
   { value: 'Owner-Led', label: 'Every project checked directly by the owner' },
-  { value: '48h', label: 'Typical quote response window' },
+  { value: '2h', label: 'Typical quote response window' },
   { value: 'Clean Site', label: 'Protected floors and daily cleanup' },
   { value: 'Clear Scope', label: 'Written plan before day one' }
 ];

@@ -18,13 +18,13 @@ const auth = getAuth();
 type AuthenticatedRequest = Request & { userId?: string };
 
 const allowedServiceTypes = [
+  "Painting",
+  "Cleaning",
+  "Painting + Cleaning",
   "Interior Painting",
   "Exterior Painting",
   "Cabinet Refinishing",
   "Commercial Spaces",
-  "Residential Cleaning",
-  "Commercial Cleaning",
-  "Painting + Cleaning",
 ] as const;
 
 const allowedConsultationTypes = [
@@ -35,6 +35,7 @@ const allowedConsultationTypes = [
 
 const allowedCleaningPropertyTypes = ["Residential", "Commercial"] as const;
 const allowedCleaningFrequencies = ["One-Time", "Weekly", "Bi-Weekly", "Monthly"] as const;
+const allowedPaintingScopes = ["Interior", "Exterior", "Interior + Exterior"] as const;
 
 const daytimeSlots = [
   "8:00 AM - 10:00 AM",
@@ -237,13 +238,13 @@ type EstimateInput = {
 
 function calculateEstimateRange(input: EstimateInput): { low: number; high: number } {
   const baseByService: Record<string, number> = {
+    Painting: 2600,
+    Cleaning: 700,
+    "Painting + Cleaning": 3200,
     "Interior Painting": 1800,
     "Exterior Painting": 3200,
     "Cabinet Refinishing": 2200,
     "Commercial Spaces": 4500,
-    "Residential Cleaning": 350,
-    "Commercial Cleaning": 900,
-    "Painting + Cleaning": 2600,
   };
 
   const sizeMultiplier: Record<string, number> = {
@@ -349,9 +350,9 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     email,
     phone,
     serviceType,
-    cleaningPropertyType,
-    cleaningSquareFootage,
-    cleaningFrequency,
+    servicePropertyType,
+    serviceSquareFootage,
+    serviceDetail,
     consultationType,
     preferredDate,
     preferredTimeSlot,
@@ -363,15 +364,16 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
   const normalizedEmail = String(email ?? "").trim().toLowerCase();
   const normalizedPhone = String(phone ?? "").trim();
   const normalizedServiceType = String(serviceType ?? "").trim();
-  const normalizedCleaningPropertyType = String(cleaningPropertyType ?? "").trim();
-  const normalizedCleaningSquareFootage = String(cleaningSquareFootage ?? "").trim();
-  const normalizedCleaningFrequency = String(cleaningFrequency ?? "").trim();
+  const normalizedServicePropertyType = String(servicePropertyType ?? "").trim();
+  const normalizedServiceSquareFootage = String(serviceSquareFootage ?? "").trim();
+  const normalizedServiceDetail = String(serviceDetail ?? "").trim();
   const normalizedConsultationType = String(consultationType ?? "").trim();
   const normalizedPreferredDate = String(preferredDate ?? "").trim();
   const normalizedPreferredTimeSlot = String(preferredTimeSlot ?? "").trim();
   const normalizedMessage = String(message ?? "").trim();
   const normalizedWebsite = String(website ?? "").trim();
-  const isCleaningLead = ["Residential Cleaning", "Commercial Cleaning", "Painting + Cleaning"].includes(normalizedServiceType);
+  const needsServiceDetails = ["Painting", "Cleaning", "Painting + Cleaning"].includes(normalizedServiceType);
+  const isPaintingLead = ["Painting", "Painting + Cleaning"].includes(normalizedServiceType);
 
   if (normalizedWebsite) {
     res.status(202).json({ ok: true });
@@ -414,34 +416,34 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     return;
   }
 
-  let parsedCleaningSquareFootage = 0;
-  if (isCleaningLead) {
+  let parsedServiceSquareFootage = 0;
+  if (needsServiceDetails) {
     if (
       !allowedCleaningPropertyTypes.includes(
-        normalizedCleaningPropertyType as (typeof allowedCleaningPropertyTypes)[number],
+        normalizedServicePropertyType as (typeof allowedCleaningPropertyTypes)[number],
       )
     ) {
-      res.status(400).json({ error: "Unsupported cleaning property type" });
+      res.status(400).json({ error: "Unsupported service property type" });
       return;
     }
 
-    if (
-      !allowedCleaningFrequencies.includes(
-        normalizedCleaningFrequency as (typeof allowedCleaningFrequencies)[number],
-      )
-    ) {
-      res.status(400).json({ error: "Unsupported cleaning frequency" });
+    if (!/^\d+$/.test(normalizedServiceSquareFootage)) {
+      res.status(400).json({ error: "Invalid service square footage" });
       return;
     }
 
-    if (!/^\d+$/.test(normalizedCleaningSquareFootage)) {
-      res.status(400).json({ error: "Invalid cleaning square footage" });
+    parsedServiceSquareFootage = Number.parseInt(normalizedServiceSquareFootage, 10);
+    if (parsedServiceSquareFootage < 100 || parsedServiceSquareFootage > 200000) {
+      res.status(400).json({ error: "Service square footage out of range" });
       return;
     }
 
-    parsedCleaningSquareFootage = Number.parseInt(normalizedCleaningSquareFootage, 10);
-    if (parsedCleaningSquareFootage < 100 || parsedCleaningSquareFootage > 200000) {
-      res.status(400).json({ error: "Cleaning square footage out of range" });
+    const validServiceDetail = isPaintingLead
+      ? allowedPaintingScopes.includes(normalizedServiceDetail as (typeof allowedPaintingScopes)[number])
+      : allowedCleaningFrequencies.includes(normalizedServiceDetail as (typeof allowedCleaningFrequencies)[number]);
+
+    if (!validServiceDetail) {
+      res.status(400).json({ error: "Unsupported service detail option" });
       return;
     }
   }
@@ -477,8 +479,8 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     hasDisallowedControlChars(normalizedEmail) ||
     hasDisallowedControlChars(normalizedPhone) ||
     hasDisallowedControlChars(normalizedMessage) ||
-    hasDisallowedControlChars(normalizedCleaningPropertyType) ||
-    hasDisallowedControlChars(normalizedCleaningFrequency)
+    hasDisallowedControlChars(normalizedServicePropertyType) ||
+    hasDisallowedControlChars(normalizedServiceDetail)
   ) {
     res.status(400).json({ error: "Lead fields contain invalid characters" });
     return;
@@ -490,12 +492,13 @@ app.post(["/leads", "/api/leads"], async (req: Request, res: Response) => {
     email: normalizedEmail,
     phone: normalizedPhone,
     serviceType: normalizedServiceType,
-    ...(isCleaningLead
+    ...(needsServiceDetails
       ? {
-          cleaningDetails: {
-            propertyType: normalizedCleaningPropertyType as (typeof allowedCleaningPropertyTypes)[number],
-            squareFootage: parsedCleaningSquareFootage,
-            frequency: normalizedCleaningFrequency as (typeof allowedCleaningFrequencies)[number],
+          serviceDetails: {
+            propertyType: normalizedServicePropertyType as (typeof allowedCleaningPropertyTypes)[number],
+            squareFootage: parsedServiceSquareFootage,
+            detailType: isPaintingLead ? "paintingScope" : "cleaningFrequency",
+            detailValue: normalizedServiceDetail,
           },
         }
       : {}),
