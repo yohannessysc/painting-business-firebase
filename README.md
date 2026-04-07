@@ -139,6 +139,25 @@ firebase emulators:start --only functions,firestore,hosting,storage
 
 ## Deployment Checklist (Production)
 
+## Branch-Safe Deployment Flow
+
+This repository is configured with GitHub Actions workflows in `.github/workflows/`:
+
+- `deploy-preview.yml`: any non-`main` branch deploys to a Firebase Hosting preview channel.
+- `deploy-production.yml`: only `main` deploys to production (`hosting,functions`).
+
+Required GitHub repository secret:
+
+- `FIREBASE_SERVICE_ACCOUNT_EPS_YK_2026`
+  - value: JSON key for a service account with Firebase Hosting + Functions deploy permissions.
+
+Recommended protection:
+
+- Protect `main` branch and require pull requests.
+- Configure the `production` environment in GitHub with required reviewers before deploy.
+
+This keeps feature-branch work private by default and makes production releases controlled.
+
 ### 1) Enable Firebase products
 
 In Firebase Console, enable:
